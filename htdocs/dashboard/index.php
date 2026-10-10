@@ -78,8 +78,8 @@ page_end(!$fin ? [] : ['scripts' => ['https://cdn.jsdelivr.net/npm/chart.js@4.4.
 (function(){ if (!window.Chart) return;
   Chart.defaults.font.family = "Cairo, sans-serif";
   new Chart(document.getElementById("chart"), { type: "bar", data: { labels: ' . json_encode($labels, JSON_UNESCAPED_UNICODE) . ',
-    datasets: [ { label: "المبيعات", data: ' . json_encode(array_map(fn($m) => round($m['s'], 2), array_values($months))) . ', backgroundColor: "#c9972b", borderRadius: 6 },
-                { label: "المشتريات", data: ' . json_encode(array_map(fn($m) => round($m['p'], 2), array_values($months))) . ', backgroundColor: "#17436b", borderRadius: 6 } ] },
+    datasets: [ { label: "المبيعات", data: ' . json_encode(array_map(fn($m) => round($m['s'], 2), array_values($months))) . ', backgroundColor: "#4aa8e8", borderRadius: 6 },
+                { label: "المشتريات", data: ' . json_encode(array_map(fn($m) => round($m['p'], 2), array_values($months))) . ', backgroundColor: "#1d6fae", borderRadius: 6 } ] },
     options: { responsive: true, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return v.toLocaleString("en-US"); } } } } } });
 })();
 </script>']);

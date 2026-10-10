@@ -95,10 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
 <style>
-body{font-family:'Cairo',sans-serif;background:linear-gradient(135deg,#0c2540,#17436b);min-height:100vh;display:flex;align-items:center;padding:24px 0}
+body{font-family:'Cairo',sans-serif;background:linear-gradient(135deg,#dcedfa,#bddcf4);min-height:100vh;display:flex;align-items:center;padding:24px 0}
 .card{border:0;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.brand{background:#0f2d4a;color:#fff;border-radius:16px 16px 0 0;padding:22px;text-align:center;border-bottom:4px solid #c9972b}
-.brand img{height:64px}.btn-brand{background:#c9972b;border:0;color:#fff;font-weight:700}.btn-brand:hover{background:#b3841f;color:#fff}
+.brand{background:#eaf5fd;color:#1b4f7a;border-radius:16px 16px 0 0;padding:22px;text-align:center;border-bottom:4px solid #4aa8e8}
+.brand img{height:64px;border-radius:16px}.btn-brand{background:#1d6fae;border:0;color:#fff;font-weight:700}.btn-brand:hover{background:#185e94;color:#fff}
 </style>
 </head>
 <body>

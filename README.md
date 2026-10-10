@@ -37,7 +37,7 @@
 تشغيل محلي (XAMPP): ضع الفولدر داخل `htdocs` وافتح `http://localhost/<الفولدر>/install/`.
 
 ## الهوية
-اسم الشركة وألوانها (كحلي بحري + ذهبي + لمسة خضراء للغذاء) واللوجو في `htdocs/assets/css/app.css` و`htdocs/assets/img/logo.svg`.
+اسم الشركة وألوانها (أزرق فاتح + أبيض) واللوجو في `htdocs/assets/css/app.css` و`htdocs/assets/img/logo.svg`.
 غيّر الألوان من المتغيرات في أول `app.css`، وبدّل `logo.svg` بلوجو الشركة الفعلي.
 
 ## الاختبارات

@@ -48,7 +48,7 @@ function page_start(string $title, string $module, array $opts = []): void
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?> | <?= e($company) ?></title>
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
-<meta name="theme-color" content="#0f2d4a">
+<meta name="theme-color" content="#2f86c6">
 <link rel="icon" type="image/svg+xml" href="<?= e(url('assets/favicon.svg')) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
