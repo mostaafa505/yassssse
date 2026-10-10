@@ -1,0 +1,993 @@
+-- phpMyAdmin SQL Dump
+-- version 4.9.0.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: sql210.infinityfree.com
+-- Generation Time: Oct 10, 2026 at 05:30 PM
+-- Server version: 11.4.13-MariaDB
+-- PHP Version: 7.2.22
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `if0_42969075_root`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_logs`
+--
+
+CREATE TABLE `audit_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `user_name` varchar(100) DEFAULT NULL,
+  `action` varchar(100) NOT NULL,
+  `entity_type` varchar(50) DEFAULT NULL,
+  `entity_id` int(11) DEFAULT NULL,
+  `old_value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
+) ;
+
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`id`, `user_id`, `user_name`, `action`, `entity_type`, `entity_id`, `old_value`, `new_value`, `ip_address`, `created_at`) VALUES
+(27, 4, 'المدير العام', 'create_user', 'user', 26, NULL, '{\"name_ar\":\"فارس\",\"role\":\"admin\",\"email\":\"fares@store.com\"}', '197.51.36.255', '2026-09-24 00:25:50'),
+(28, 4, 'المدير العام', 'create_user', 'user', 27, NULL, '{\"name_ar\":\"كاشير\",\"role\":\"cashier\",\"email\":\"casher@adventure.com\"}', '197.51.36.255', '2026-09-24 00:26:23'),
+(29, 4, 'المدير العام', 'update_user', 'user', 26, '{\"id\":26,\"name_ar\":\"فارس\",\"name_en\":\"fares\",\"email\":\"fares@store.com\",\"password\":\"$2y$12$mOwIFDcpGFU\\/xDpFv09zEuD9fNIGjX80N2UY.AQeEJxfw44wo3EMe\",\"role\":\"admin\",\"permissions\":\"[]\",\"is_active\":1,\"created_at\":\"2026-09-24 00:25:50\"}', '{\"name_ar\":\"فارس\",\"role\":\"admin\",\"email\":\"fares@store.com\"}', '197.51.36.255', '2026-09-24 00:26:32'),
+(30, 4, 'المدير العام', 'logout', 'user', 4, NULL, NULL, '197.51.36.255', '2026-09-24 00:26:53'),
+(31, 26, 'فارس', 'login', 'user', 26, NULL, '{\"email\":\"fares@store.com\"}', '197.51.36.255', '2026-09-24 00:27:00'),
+(32, 26, 'فارس', 'update', 'product', 87, '{\"id\":87,\"name_ar\":\"شاي روويبوس من جنوب أفريقيا\",\"name_en\":\"Rooibos Tea from South Africa\",\"sku\":null,\"barcode\":null,\"category_id\":20,\"image\":\"imported_image76.png\",\"description_ar\":null,\"description_en\":null,\"retail_price\":\"27.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"0.00\",\"min_stock_alert\":\"5.00\",\"is_active\":1,\"created_at\":\"2026-09-22 13:38:14\"}', '{\"name_ar\":\"شاي روويبوس من جنوب أفريقيا\",\"retail_price\":27,\"offer_price\":null,\"wholesale_price\":20}', '197.51.36.255', '2026-09-24 00:34:42'),
+(33, 26, 'فارس', 'update', 'product', 87, '{\"id\":87,\"name_ar\":\"شاي روويبوس من جنوب أفريقيا\",\"name_en\":\"Rooibos Tea from South Africa\",\"sku\":\"\",\"barcode\":null,\"category_id\":20,\"image\":\"imported_image76.png\",\"description_ar\":\"\",\"description_en\":\"\",\"retail_price\":\"27.00\",\"offer_price\":null,\"wholesale_price\":\"20.00\",\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"0.00\",\"min_stock_alert\":\"5.00\",\"is_active\":1,\"created_at\":\"2026-09-22 13:38:14\"}', '{\"name_ar\":\"شاي روويبوس من جنوب أفريقيا\",\"retail_price\":27,\"offer_price\":null,\"wholesale_price\":null}', '197.51.36.255', '2026-09-24 00:35:18'),
+(34, 26, 'فارس', 'login', 'user', 26, NULL, '{\"email\":\"fares@store.com\"}', '2.48.97.81', '2026-09-24 11:15:56'),
+(35, 26, 'فارس', 'add_exhibition_expense', 'exhibition_expense', 1, NULL, '{\"exhibition_id\":1,\"category\":\"booth_rent\",\"title\":\"تأجير جناح المعرض\",\"amount\":3333}', '2.48.97.81', '2026-09-24 11:42:01'),
+(36, 26, 'الكاشير الرئيسي', 'create_sale', 'sale', 14, NULL, '{\"invoice_number\":\"INV-260924-DD598\",\"total\":75,\"discount\":0,\"payment_method\":\"cash\",\"items_count\":1,\"items\":[\"1x ابريق شاي صيني  منقوش حب الرمان 10-  500 مل (AED 75.00)\"]}', '94.57.68.20', '2026-09-24 16:26:29'),
+(37, 4, 'المدير العام', 'logout', 'user', 4, NULL, NULL, '41.46.78.105', '2026-09-24 16:32:37'),
+(38, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.78.105', '2026-09-24 16:33:07'),
+(39, 4, 'المدير العام', 'logout', 'user', 4, NULL, NULL, '41.46.78.105', '2026-09-24 16:33:43'),
+(40, 27, 'كاشير', 'login', 'user', 27, NULL, '{\"email\":\"casher@adventure.com\"}', '41.46.78.105', '2026-09-24 16:33:48'),
+(41, 27, 'كاشير', 'logout', 'user', 27, NULL, NULL, '41.46.78.105', '2026-09-24 16:34:07'),
+(42, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.78.105', '2026-09-24 16:34:16'),
+(43, 4, 'المدير العام', 'logout', 'user', 4, NULL, NULL, '41.46.78.105', '2026-09-24 16:35:00'),
+(44, 26, 'فارس', 'login', 'user', 26, NULL, '{\"email\":\"fares@store.com\"}', '41.46.78.105', '2026-09-24 16:35:08'),
+(45, 26, 'فارس', 'logout', 'user', 26, NULL, NULL, '41.46.78.105', '2026-09-24 16:39:04'),
+(46, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.78.105', '2026-09-24 16:39:14'),
+(47, 4, 'المدير العام', 'update_user', 'user', 27, '{\"id\":27,\"name_ar\":\"كاشير\",\"name_en\":\"casher\",\"email\":\"casher@adventure.com\",\"password\":\"$2y$12$XGjXMqayy1Wtb36x.OpQyOllG4mFSE5KaT0NpKcccLJpckFGp8Iuq\",\"role\":\"cashier\",\"permissions\":\"[]\",\"is_active\":1,\"created_at\":\"2026-09-24 00:26:23\"}', '{\"name_ar\":\"كاشير\",\"role\":\"cashier\",\"email\":\"casher@dahanaa.com\"}', '41.46.78.105', '2026-09-24 16:40:15'),
+(48, 26, 'فارس', 'process_return', 'sale', 14, '{\"invoice_number\":\"INV-260924-DD598\",\"status\":\"completed\"}', '{\"invoice_number\":\"INV-260924-DD598\",\"status\":\"returned\",\"reason\":\"تجريب الطابعة\",\"refund_amount\":75,\"refund_method\":\"cash\",\"returned_items\":[\"1x ابريق شاي صيني  منقوش حب الرمان 10-  500 مل (AED 75.00)\"],\"processed_by\":\"فارس\"}', '83.110.149.58', '2026-09-24 16:51:24'),
+(49, 26, 'الكاشير الرئيسي', 'sync_offline_sale', 'sale', 15, NULL, '{\"invoice_number\":\"INV-260924-48554\",\"total\":29,\"offline_created\":\"2026-09-24T12:43:52.803Z\",\"created_at_used\":\"2026-09-24 16:43:52\",\"items_count\":1,\"stock_went_negative\":true,\"discount\":0,\"unauthorized_discount\":false,\"zero_price_items\":[],\"unauthorized_wholesale_items\":[]}', '83.110.149.58', '2026-09-24 16:51:48'),
+(50, 4, 'المدير العام', 'logout', 'user', 4, NULL, NULL, '41.46.78.105', '2026-09-24 16:53:11'),
+(51, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.78.105', '2026-09-24 16:58:51'),
+(52, 26, 'الكاشير الرئيسي', 'logout', 'user', 26, NULL, NULL, '83.110.149.58', '2026-09-24 18:32:15'),
+(53, 27, 'كاشير', 'login', 'user', 27, NULL, '{\"email\":\"casher@dahanaa.com\"}', '83.110.149.58', '2026-09-24 18:34:16'),
+(54, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.78.105', '2026-09-24 18:57:36'),
+(55, 26, 'فارس', 'add_exhibition_expense', 'exhibition_expense', 2, NULL, '{\"exhibition_id\":1,\"category\":\"hospitality_food\",\"title\":\"غداء للموظفين\",\"amount\":200}', '83.110.149.58', '2026-09-24 18:57:43'),
+(56, 26, 'فارس', 'update', 'product', 2, '{\"id\":2,\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"name_en\":\"Complete Tea & Coffee Set Bag - Metal\",\"sku\":null,\"barcode\":null,\"category_id\":16,\"image\":\"imported_image35.jpeg\",\"description_ar\":null,\"description_en\":null,\"retail_price\":\"3.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"12.00\",\"min_stock_alert\":\"5.00\",\"is_active\":1,\"created_at\":\"2026-09-22 13:38:08\"}', '{\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"retail_price\":140,\"offer_price\":null,\"wholesale_price\":null}', '83.110.149.58', '2026-09-24 19:05:58'),
+(57, 26, 'فارس', 'add_exhibition_expense', 'exhibition_expense', 3, NULL, '{\"exhibition_id\":1,\"category\":\"shipping_transport\",\"title\":\"بترول للتويوتا كراون\",\"amount\":100}', '83.110.149.58', '2026-09-25 15:43:50'),
+(58, 27, 'كاشير', 'create_sale', 'sale', 16, NULL, '{\"invoice_number\":\"INV-260925-DE711\",\"total\":84,\"discount\":0,\"payment_method\":\"card\",\"items_count\":2,\"items\":[\"1x فنجان الجملين ازرق بيد tow camel cup 100 ml (AED 42.00)\",\"1x فنجان جمل الصحراء DESERT CAMEL 250 ML مضلع (AED 42.00)\"]}', '83.110.149.58', '2026-09-25 15:48:59'),
+(59, 26, 'فارس', 'process_return', 'sale', 16, '{\"invoice_number\":\"INV-260925-DE711\",\"status\":\"completed\"}', '{\"invoice_number\":\"INV-260925-DE711\",\"status\":\"partial_return\",\"reason\":\"خطء اثناء الطباعة\",\"refund_amount\":42,\"refund_method\":\"card\",\"returned_items\":[\"1x فنجان الجملين ازرق بيد tow camel cup 100 ml (AED 42.00)\"],\"processed_by\":\"فارس\"}', '83.110.149.58', '2026-09-25 15:55:50'),
+(60, 27, 'كاشير', 'create_sale', 'sale', 17, NULL, '{\"invoice_number\":\"INV-260925-4D8D4\",\"total\":41,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x شاي أربع 7777(250 غرام) (AED 41.00)\"]}', '83.110.149.58', '2026-09-25 16:45:09'),
+(61, 26, 'فارس', 'add_exhibition_expense', 'exhibition_expense', 4, NULL, '{\"exhibition_id\":1,\"category\":\"shipping_transport\",\"title\":\"اجار نقل بضاعة الى المعرض\",\"amount\":75}', '83.110.149.58', '2026-09-25 17:19:26'),
+(62, 26, 'فارس', 'add_exhibition_expense', 'exhibition_expense', 5, NULL, '{\"exhibition_id\":1,\"category\":\"shipping_transport\",\"title\":\"اجرة نقل المحاسب اول يوم\",\"amount\":42}', '83.110.149.58', '2026-09-25 17:23:51'),
+(63, 27, 'كاشير', 'create_sale', 'sale', 18, NULL, '{\"invoice_number\":\"INV-260925-00C03\",\"total\":41,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x شاي أربع 7777(250 غرام) (AED 41.00)\"]}', '83.110.149.58', '2026-09-25 19:35:21'),
+(64, 26, 'فارس', 'update', 'product', 95, '{\"id\":95,\"name_ar\":\"كيك دحانة DAHANA CAKE PACK عادي\",\"name_en\":\"DAHANA Cake Pack - Original\",\"sku\":null,\"barcode\":null,\"category_id\":20,\"image\":\"imported_image84.png\",\"description_ar\":null,\"description_en\":null,\"retail_price\":\"29.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"-1.00\",\"min_stock_alert\":\"5.00\",\"is_active\":1,\"created_at\":\"2026-09-22 13:38:14\"}', '{\"name_ar\":\"كيك دحانة DAHANA CAKE PACK عادي\",\"retail_price\":29,\"offer_price\":null,\"wholesale_price\":null}', '83.110.149.58', '2026-09-25 21:35:35'),
+(65, 27, 'كاشير', 'create_sale', 'sale', 19, NULL, '{\"invoice_number\":\"INV-260925-E3E2B\",\"total\":29,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x كيك دحانة DAHANA CAKE PACK عادي (AED 29.00)\"]}', '83.110.149.58', '2026-09-25 21:36:08'),
+(66, 27, 'كاشير', 'create_sale', 'sale', 20, NULL, '{\"invoice_number\":\"INV-260925-4DA9C\",\"total\":79,\"discount\":0,\"payment_method\":\"card\",\"items_count\":2,\"items\":[\"1x فنجان جمل الصحراء DESERT CAMEL 250 ML مضلع (AED 42.00)\",\"1x فنجان جمل الصحراء DESERT CAMEL 180 ML مضلع (AED 37.00)\"]}', '83.110.149.58', '2026-09-25 22:42:16'),
+(67, 27, 'كاشير', 'create_sale', 'sale', 21, NULL, '{\"invoice_number\":\"INV-260926-91591\",\"total\":37,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x فنجان الجملين وردي بدون يد tow camel cup 100 ml (AED 37.00)\"]}', '83.110.149.58', '2026-09-26 16:04:27'),
+(68, 27, 'كاشير', 'create_sale', 'sale', 22, NULL, '{\"invoice_number\":\"INV-260926-D7DD6\",\"total\":29,\"discount\":0,\"payment_method\":\"cash\",\"items_count\":1,\"items\":[\"1x كيك دحانة DAHANA CAKE PACK عادي (AED 29.00)\"]}', '83.110.149.58', '2026-09-26 16:26:24'),
+(69, 27, 'كاشير', 'create_sale', 'sale', 23, NULL, '{\"invoice_number\":\"INV-260926-97740\",\"total\":85,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x طقم فنجان DAHANA وردة لون اخضر (AED 85.00)\"]}', '83.110.149.58', '2026-09-26 16:56:01'),
+(70, 27, 'كاشير', 'create_sale', 'sale', 24, NULL, '{\"invoice_number\":\"INV-260926-65FA6\",\"total\":27,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x فنجان ابيض منقوش cup camel 120 ml (AED 27.00)\"]}', '83.110.149.58', '2026-09-26 19:48:32'),
+(71, 26, 'فارس', 'create', 'product', 115, NULL, '{\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"retail_price\":140,\"stock_qty\":2,\"has_variants\":0}', '83.110.149.58', '2026-09-26 19:57:29'),
+(72, 26, 'فارس', 'update', 'product', 115, '{\"id\":115,\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"name_en\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"sku\":\"\",\"barcode\":null,\"category_id\":21,\"image\":\"prod_1790438249_6ab7eb697f212.webp\",\"description_ar\":\"\",\"description_en\":\"\",\"retail_price\":\"140.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"2.00\",\"min_stock_alert\":\"0.00\",\"is_active\":1,\"created_at\":\"2026-09-26 19:57:29\"}', '{\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"retail_price\":140,\"offer_price\":null,\"wholesale_price\":null}', '83.110.149.58', '2026-09-26 19:57:55'),
+(73, 27, 'كاشير', 'create_sale', 'sale', 25, NULL, '{\"invoice_number\":\"INV-260926-859FB\",\"total\":405,\"discount\":0,\"payment_method\":\"card\",\"items_count\":2,\"items\":[\"1x شنطة عدة الشاي والقهوة الكاملة معدن (AED 140.00)\",\"1x شنطة القهوة الكاملة (AED 265.00)\"]}', '83.110.149.58', '2026-09-26 19:59:42'),
+(74, 27, 'كاشير', 'create_sale', 'sale', 26, NULL, '{\"invoice_number\":\"INV-260926-3B95F\",\"total\":29,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x كيك دحانة DAHANA CAKE PACK عادي (AED 29.00)\"]}', '83.110.149.58', '2026-09-26 20:24:53'),
+(75, 27, 'كاشير', 'sync_offline_sale', 'sale', 27, NULL, '{\"invoice_number\":\"INV-260926-4DDD7\",\"total\":27,\"offline_created\":\"2026-09-26T18:46:50.794Z\",\"created_at_used\":\"2026-09-26 22:46:50\",\"items_count\":1,\"stock_went_negative\":false,\"discount\":0,\"unauthorized_discount\":false,\"zero_price_items\":[],\"unauthorized_wholesale_items\":[]}', '83.110.149.58', '2026-09-26 22:47:44'),
+(76, 27, 'كاشير', 'create_sale', 'sale', 28, NULL, '{\"invoice_number\":\"INV-260926-21660\",\"total\":76,\"discount\":0,\"payment_method\":\"card\",\"items_count\":2,\"items\":[\"1x رأس الحصان – شاي أسود سيلاني نقي 300 غرام (AED 40.00)\",\"1x شاي الشايب – علبة معدنية 250 غرام (AED 36.00)\"]}', '83.110.149.58', '2026-09-26 22:50:59'),
+(77, 27, 'كاشير', 'create_sale', 'sale', 29, NULL, '{\"invoice_number\":\"INV-260927-F2995\",\"total\":41,\"discount\":0,\"payment_method\":\"card\",\"items_count\":1,\"items\":[\"1x شاي البدو الفاخر - 250 غ (AED 41.00)\"]}', '83.110.149.58', '2026-09-27 17:44:28'),
+(78, 27, 'كاشير', 'create_sale', 'sale', 30, NULL, '{\"invoice_number\":\"INV-260927-CD949\",\"total\":263,\"discount\":0,\"payment_method\":\"card\",\"items_count\":3,\"items\":[\"3x كيك دحانة DAHANA CAKE PACK عادي (AED 29.00)\",\"1x ابريق شاي صيني مفنوخ منقوش ورد معتق 1 لتر  0 - نقش يدوي (AED 140.00)\",\"1x شاي راكان - سيلاني فاخر 250 جرام (AED 36.00)\"]}', '83.110.149.58', '2026-09-27 19:20:07'),
+(79, 26, 'فارس', 'update', 'product', 115, '{\"id\":115,\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"name_en\":\"Complete Tea & Coffee Set Bag - Metal\",\"sku\":\"\",\"barcode\":null,\"category_id\":21,\"image\":\"prod_1790438249_6ab7eb697f212.webp\",\"description_ar\":\"\",\"description_en\":\"\",\"retail_price\":\"140.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"1.00\",\"min_stock_alert\":\"0.00\",\"is_active\":1,\"created_at\":\"2026-09-26 19:57:29\"}', '{\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"retail_price\":140,\"offer_price\":null,\"wholesale_price\":null}', '2.48.211.10', '2026-09-28 12:07:07'),
+(80, 26, 'فارس', 'delete', 'product', 115, '{\"id\":115,\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"name_en\":\"Complete Tea & Coffee Set Bag - Metal\",\"sku\":\"\",\"barcode\":null,\"category_id\":21,\"image\":\"prod_1790438249_6ab7eb697f212.webp\",\"description_ar\":\"\",\"description_en\":\"\",\"retail_price\":\"140.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"0.00\",\"min_stock_alert\":\"0.00\",\"is_active\":1,\"created_at\":\"2026-09-26 19:57:29\"}', NULL, '2.48.211.10', '2026-09-28 12:07:14'),
+(81, 26, 'فارس', 'update', 'product', 2, '{\"id\":2,\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"name_en\":\"Complete Tea & Coffee Set Bag - Metal\",\"sku\":\"\",\"barcode\":null,\"category_id\":16,\"image\":\"imported_image35.jpeg\",\"description_ar\":\"\",\"description_en\":\"\",\"retail_price\":\"140.00\",\"offer_price\":null,\"wholesale_price\":null,\"cost_price\":null,\"has_variants\":0,\"stock_qty\":\"2.00\",\"min_stock_alert\":\"5.00\",\"is_active\":1,\"created_at\":\"2026-09-22 13:38:08\"}', '{\"name_ar\":\"شنطة عدة الشاي والقهوة الكاملة معدن\",\"retail_price\":140,\"offer_price\":null,\"wholesale_price\":null}', '2.48.211.10', '2026-09-28 12:07:31'),
+(82, 26, 'فارس', 'add_exhibition_expense', 'exhibition_expense', 6, NULL, '{\"exhibition_id\":1,\"category\":\"shipping_transport\",\"title\":\"بترول للسيارة\",\"amount\":50}', '2.48.211.10', '2026-09-28 12:09:38'),
+(83, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.75.211', '2026-09-29 21:00:42'),
+(84, 4, 'المدير العام', 'logout', 'user', 4, NULL, NULL, '41.46.75.211', '2026-10-01 02:57:37'),
+(85, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '41.46.75.211', '2026-10-02 14:39:13'),
+(86, 26, 'فارس', 'login', 'user', 26, NULL, '{\"email\":\"fares@store.com\"}', '109.177.232.169', '2026-10-04 16:32:49'),
+(87, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '197.51.247.163', '2026-10-04 17:20:49'),
+(88, 4, 'المدير العام', 'login', 'user', 4, NULL, '{\"email\":\"admin@store.com\"}', '197.51.39.61', '2026-10-08 18:28:37'),
+(89, 4, 'المدير العام', 'stocktake', 'inventory', 0, NULL, '{\"items_counted\":104,\"items_adjusted\":1}', '197.51.39.61', '2026-10-08 18:30:40'),
+(90, 4, 'المدير العام', 'stocktake', 'inventory', 0, NULL, '{\"items_counted\":104,\"items_adjusted\":1}', '197.51.39.61', '2026-10-08 18:31:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `name_ar` varchar(100) NOT NULL,
+  `name_en` varchar(100) NOT NULL,
+  `sort` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name_ar`, `name_en`, `sort`) VALUES
+(16, 'حقائب', 'Bags', 1),
+(17, 'فنجاين', 'Cups', 2),
+(18, 'ادوات كهربائية', 'Electrical Appliances', 3),
+(19, 'ابريق و دلة', 'Teapots & Dallahs', 4),
+(20, 'شاي وقهوة', 'Tea & Coffee', 5),
+(21, 'ادوات', 'Tools', 6);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exhibitions`
+--
+
+CREATE TABLE `exhibitions` (
+  `id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL COMMENT 'اسم المعرض أو الفعالية',
+  `location` varchar(200) DEFAULT NULL COMMENT 'المكان أو المدينة أو الجناح',
+  `start_date` date NOT NULL COMMENT 'تاريخ بداية المعرض',
+  `end_date` date NOT NULL COMMENT 'تاريخ نهاية المعرض',
+  `status` enum('upcoming','active','completed') NOT NULL DEFAULT 'active' COMMENT 'حالة المعرض',
+  `budget` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT 'الميزانية التقديرية المخصصة',
+  `notes` text DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `exhibitions`
+--
+
+INSERT INTO `exhibitions` (`id`, `title`, `location`, `start_date`, `end_date`, `status`, `budget`, `notes`, `created_by`, `created_at`) VALUES
+(1, 'معرض دبي', '', '2026-09-24', '2026-09-28', 'active', '0.00', NULL, 26, '2026-09-24 11:41:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exhibition_expenses`
+--
+
+CREATE TABLE `exhibition_expenses` (
+  `id` int(11) NOT NULL,
+  `exhibition_id` int(11) NOT NULL,
+  `category` enum('booth_rent','staff_wages','hospitality_food','packaging_supplies','shipping_transport','setup_decoration','marketing_ads','utilities_permits','other') NOT NULL DEFAULT 'other',
+  `title` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `expense_date` date NOT NULL,
+  `payment_method` enum('cash','card','transfer') NOT NULL DEFAULT 'cash',
+  `receipt_ref` varchar(100) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `exhibition_expenses`
+--
+
+INSERT INTO `exhibition_expenses` (`id`, `exhibition_id`, `category`, `title`, `amount`, `expense_date`, `payment_method`, `receipt_ref`, `notes`, `created_by`, `created_at`) VALUES
+(1, 1, 'booth_rent', 'تأجير جناح المعرض', '3333.00', '2026-09-24', 'cash', '', '', 26, '2026-09-24 11:42:01'),
+(2, 1, 'hospitality_food', 'غداء للموظفين', '200.00', '2026-09-24', 'cash', '', '', 26, '2026-09-24 18:57:43'),
+(3, 1, 'shipping_transport', 'بترول للتويوتا كراون', '100.00', '2026-09-25', 'cash', '', '', 26, '2026-09-25 15:43:50'),
+(4, 1, 'shipping_transport', 'اجار نقل بضاعة الى المعرض', '75.00', '2026-09-25', 'cash', '', '', 26, '2026-09-25 17:19:26'),
+(5, 1, 'shipping_transport', 'اجرة نقل المحاسب اول يوم', '42.00', '2026-09-25', 'cash', '', '', 26, '2026-09-25 17:23:51'),
+(6, 1, 'shipping_transport', 'بترول للسيارة', '50.00', '2026-09-27', 'cash', '', '', 26, '2026-09-28 12:09:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_movements`
+--
+
+CREATE TABLE `inventory_movements` (
+  `id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `variant_id` int(11) DEFAULT NULL,
+  `movement_type` enum('in','out','transfer_in','transfer_out','sale','return','adjustment') NOT NULL,
+  `quantity` decimal(10,2) NOT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
+  `from_location` varchar(100) DEFAULT 'warehouse',
+  `to_location` varchar(100) DEFAULT 'showroom',
+  `reference_id` int(11) DEFAULT NULL COMMENT 'sale_id or return_id',
+  `notes` text DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `inventory_movements`
+--
+
+INSERT INTO `inventory_movements` (`id`, `product_id`, `variant_id`, `movement_type`, `quantity`, `cost_price`, `from_location`, `to_location`, `reference_id`, `notes`, `user_id`, `created_at`) VALUES
+(33, 46, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 14, 'فاتورة مبيعات #INV-260924-DD598', 26, '2026-09-24 16:26:29'),
+(34, 46, NULL, 'return', '1.00', NULL, 'warehouse', 'showroom', 14, 'مرتجع من فاتورة #INV-260924-DD598 — السبب: تجريب الطابعة', 26, '2026-09-24 16:51:24'),
+(35, 95, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 15, 'فاتورة أوفلاين #INV-260924-48554 (مزامنة)', 26, '2026-09-24 16:51:48'),
+(36, 27, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 16, 'فاتورة مبيعات #INV-260925-DE711', 27, '2026-09-25 15:48:59'),
+(37, 19, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 16, 'فاتورة مبيعات #INV-260925-DE711', 27, '2026-09-25 15:48:59'),
+(38, 27, NULL, 'return', '1.00', NULL, 'warehouse', 'showroom', 16, 'مرتجع من فاتورة #INV-260925-DE711 — السبب: خطء اثناء الطباعة', 26, '2026-09-25 15:55:50'),
+(39, 69, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 17, 'فاتورة مبيعات #INV-260925-4D8D4', 27, '2026-09-25 16:45:09'),
+(40, 69, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 18, 'فاتورة مبيعات #INV-260925-00C03', 27, '2026-09-25 19:35:21'),
+(41, 95, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 19, 'فاتورة مبيعات #INV-260925-E3E2B', 27, '2026-09-25 21:36:08'),
+(42, 19, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 20, 'فاتورة مبيعات #INV-260925-4DA9C', 27, '2026-09-25 22:42:16'),
+(43, 20, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 20, 'فاتورة مبيعات #INV-260925-4DA9C', 27, '2026-09-25 22:42:16'),
+(44, 32, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 21, 'فاتورة مبيعات #INV-260926-91591', 27, '2026-09-26 16:04:27'),
+(45, 95, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 22, 'فاتورة مبيعات #INV-260926-D7DD6', 27, '2026-09-26 16:26:24'),
+(46, 10, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 23, 'فاتورة مبيعات #INV-260926-97740', 27, '2026-09-26 16:56:01'),
+(47, 23, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 24, 'فاتورة مبيعات #INV-260926-65FA6', 27, '2026-09-26 19:48:32'),
+(48, 115, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 25, 'فاتورة مبيعات #INV-260926-859FB', 27, '2026-09-26 19:59:42'),
+(49, 1, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 25, 'فاتورة مبيعات #INV-260926-859FB', 27, '2026-09-26 19:59:42'),
+(50, 95, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 26, 'فاتورة مبيعات #INV-260926-3B95F', 27, '2026-09-26 20:24:53'),
+(51, 25, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 27, 'فاتورة أوفلاين #INV-260926-4DDD7 (مزامنة)', 27, '2026-09-26 22:47:44'),
+(52, 70, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 28, 'فاتورة مبيعات #INV-260926-21660', 27, '2026-09-26 22:50:59'),
+(53, 68, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 28, 'فاتورة مبيعات #INV-260926-21660', 27, '2026-09-26 22:50:59'),
+(54, 71, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 29, 'فاتورة مبيعات #INV-260927-F2995', 27, '2026-09-27 17:44:28'),
+(55, 95, NULL, 'sale', '3.00', NULL, 'warehouse', 'showroom', 30, 'فاتورة مبيعات #INV-260927-CD949', 27, '2026-09-27 19:20:07'),
+(56, 45, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 30, 'فاتورة مبيعات #INV-260927-CD949', 27, '2026-09-27 19:20:07'),
+(57, 50, NULL, 'sale', '1.00', NULL, 'warehouse', 'showroom', 30, 'فاتورة مبيعات #INV-260927-CD949', 27, '2026-09-27 19:20:07'),
+(58, 62, NULL, 'adjustment', '1.00', NULL, 'warehouse', 'showroom', NULL, 'تسوية جردية (الفارق اللي لقاه العدّ: +1, الرصيد الحي وقت الحفظ: 11.00، الرصيد الجديد: 12)', 4, '2026-10-08 18:30:40'),
+(59, 62, NULL, 'adjustment', '1.00', NULL, 'warehouse', 'showroom', NULL, 'تسوية جردية (الفارق اللي لقاه العدّ: -1, الرصيد الحي وقت الحفظ: 12.00، الرصيد الجديد: 11)', 4, '2026-10-08 18:31:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `offers`
+--
+
+CREATE TABLE `offers` (
+  `id` int(11) NOT NULL,
+  `name_ar` varchar(200) NOT NULL,
+  `name_en` varchar(200) NOT NULL,
+  `discount_type` enum('percent','fixed','set_price') NOT NULL DEFAULT 'percent',
+  `discount_value` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `apply_to` enum('all','category','product') NOT NULL DEFAULT 'all',
+  `target_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Array of product/category IDs'
+) ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `products`
+--
+
+CREATE TABLE `products` (
+  `id` int(11) NOT NULL,
+  `name_ar` varchar(200) NOT NULL,
+  `name_en` varchar(200) NOT NULL,
+  `sku` varchar(100) DEFAULT NULL,
+  `barcode` varchar(100) DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `description_ar` text DEFAULT NULL,
+  `description_en` text DEFAULT NULL,
+  `retail_price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `offer_price` decimal(10,2) DEFAULT NULL,
+  `wholesale_price` decimal(10,2) DEFAULT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
+  `has_variants` tinyint(1) NOT NULL DEFAULT 0,
+  `stock_qty` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Used when has_variants=0',
+  `min_stock_alert` decimal(10,2) NOT NULL DEFAULT 5.00,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name_ar`, `name_en`, `sku`, `barcode`, `category_id`, `image`, `description_ar`, `description_en`, `retail_price`, `offer_price`, `wholesale_price`, `cost_price`, `has_variants`, `stock_qty`, `min_stock_alert`, `is_active`, `created_at`) VALUES
+(1, 'شنطة القهوة الكاملة', 'Complete Coffee Bag', NULL, NULL, 16, 'imported_image36.png', NULL, NULL, '265.00', NULL, NULL, NULL, 0, '2.00', '5.00', 1, '2026-09-22 13:38:08'),
+(2, 'شنطة عدة الشاي والقهوة الكاملة معدن', 'Complete Tea & Coffee Set Bag - Metal', '', NULL, 16, 'imported_image35.jpeg', '', '', '140.00', NULL, NULL, NULL, 0, '1.00', '5.00', 1, '2026-09-22 13:38:08'),
+(3, 'عزبة شاي مودرن', 'Modern Tea Travel Set', NULL, NULL, 16, 'imported_image37.jpeg', NULL, NULL, '10.00', NULL, NULL, NULL, 0, '10.00', '5.00', 1, '2026-09-22 13:38:08'),
+(4, 'SND0034AE شنطة استكانة فرنسي', 'French Tea Glass Bag SND0034AE', NULL, NULL, 16, 'imported_image38.jpeg', NULL, NULL, '30.00', NULL, NULL, NULL, 0, '10.00', '5.00', 1, '2026-09-22 13:38:09'),
+(5, 'شنطة صيني - شاي-قهوة 40*20 برتقالي', 'China Tea-Coffee Bag 40x20 - Orange', NULL, NULL, 16, 'imported_image40.jpeg', NULL, NULL, '190.00', NULL, NULL, NULL, 0, '1.00', '5.00', 1, '2026-09-22 13:38:09'),
+(6, 'شنطة صيني - شاي-قهوة 20*20 رصاصي منقوش', 'China Tea-Coffee Bag 20x20 - Patterned Grey', NULL, NULL, 16, 'imported_image39.jpeg', NULL, NULL, '120.00', NULL, NULL, NULL, 0, '1.00', '5.00', 1, '2026-09-22 13:38:09'),
+(7, 'شنطة عدة للرحلات ( مستلزمات الشاي ) لون زيتي', 'Travel Tea Kit Bag - Olive', NULL, NULL, 16, 'imported_image41.jpeg', NULL, NULL, '450.00', NULL, NULL, NULL, 0, '7.00', '5.00', 1, '2026-09-22 13:38:09'),
+(8, 'طقم فنجان DAHANA الشيخ زايد VIB', 'DAHANA Cup Set - Sheikh Zayed VIP', NULL, NULL, 17, 'imported_image1.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:09'),
+(9, 'طقم فنجان DAHANA الشيخ زايد بدون نجمة صغير', 'DAHANA Cup Set - Sheikh Zayed (No Star), Small', NULL, NULL, 17, 'imported_image2.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '118.00', '5.00', 1, '2026-09-22 13:38:09'),
+(10, 'طقم فنجان DAHANA وردة لون اخضر', 'DAHANA Cup Set - Rose, Green', NULL, NULL, 17, 'imported_image3.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:09'),
+(11, 'طقم فنجان DAHANA وردة لون عنابي', 'DAHANA Cup Set - Rose, Burgundy', NULL, NULL, 17, 'imported_image5.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '7.00', '5.00', 1, '2026-09-22 13:38:09'),
+(12, 'طقم فنجان DAHANA وردة لون ازرق', 'DAHANA Cup Set - Rose, Blue', NULL, NULL, 17, 'imported_image4.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:09'),
+(13, 'طقم فنجان DAHANA الشعار القديم', 'DAHANA Cup Set - Old Logo', NULL, NULL, 17, 'imported_image6.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '16.00', '5.00', 1, '2026-09-22 13:38:09'),
+(14, 'طقم فنجان DAHANA شعار ابو ظبي', 'DAHANA Cup Set - Abu Dhabi Emblem', NULL, NULL, 17, 'imported_image7.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '19.00', '5.00', 1, '2026-09-22 13:38:09'),
+(15, 'طقم فنجان DAHANA شعار دولة الامارات', 'DAHANA Cup Set - UAE Emblem', NULL, NULL, 17, 'imported_image8.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:09'),
+(16, 'طقم فنجان DAHANA شخبوط لون احمر', 'DAHANA Cup Set - Shakhbut, Red', NULL, NULL, 17, 'imported_image9.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '9.00', '5.00', 1, '2026-09-22 13:38:09'),
+(17, 'طقم فنجان DAHANA شخبوط لون ازرق', 'DAHANA Cup Set - Shakhbut, Blue', NULL, NULL, 17, 'imported_image10.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '2.00', '5.00', 1, '2026-09-22 13:38:09'),
+(18, 'طقم فنجان DAHANA خليفة', 'DAHANA Cup Set - Khalifa', NULL, NULL, 17, 'imported_image11.jpeg', NULL, NULL, '85.00', NULL, NULL, NULL, 0, '15.00', '5.00', 1, '2026-09-22 13:38:10'),
+(19, 'فنجان جمل الصحراء DESERT CAMEL 250 ML مضلع', 'Desert Camel Cup 250ML - Ribbed', NULL, NULL, 17, 'imported_image12.jpeg', NULL, NULL, '42.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:10'),
+(20, 'فنجان جمل الصحراء DESERT CAMEL 180 ML مضلع', 'Desert Camel Cup 180ML - Ribbed', NULL, NULL, 17, 'imported_image13.jpeg', NULL, NULL, '37.00', NULL, NULL, NULL, 0, '5.00', '5.00', 1, '2026-09-22 13:38:10'),
+(21, 'فنجان الشمس والرمال SUN AND SANDS 180 ML', 'Sun and Sands Cup 180ML', NULL, NULL, 17, 'imported_image14.jpeg', NULL, NULL, '37.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:10'),
+(22, 'فنجان ابيض منقوش cup camel 250 ml', 'White Patterned Camel Cup 250ML', NULL, NULL, 17, NULL, NULL, NULL, '39.00', NULL, NULL, NULL, 0, '12.00', '5.00', 1, '2026-09-22 13:38:10'),
+(23, 'فنجان ابيض منقوش cup camel 120 ml', 'White Patterned Camel Cup 120ML', NULL, NULL, 17, 'imported_image21.jpeg', NULL, NULL, '27.00', NULL, NULL, NULL, 0, '15.00', '5.00', 1, '2026-09-22 13:38:10'),
+(24, 'فنجان بني منقوش Browen cup 250 ml', 'Brown Patterned Cup 250ML', NULL, NULL, 17, 'imported_image16.jpeg', NULL, NULL, '37.00', NULL, NULL, NULL, 0, '18.00', '5.00', 1, '2026-09-22 13:38:10'),
+(25, 'فنجان بني منقوش Browen cup 120 ml', 'Brown Patterned Cup 120ML', NULL, NULL, 17, 'imported_image17.jpeg', NULL, NULL, '27.00', NULL, NULL, NULL, 0, '21.00', '5.00', 1, '2026-09-22 13:38:10'),
+(26, 'فنجان الجملين اخضر بيد tow camel cup 100 ml', 'Two Camels Cup with Handle 100ML - Green', NULL, NULL, 17, 'imported_image18.jpg', NULL, NULL, '42.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:10'),
+(27, 'فنجان الجملين ازرق بيد tow camel cup 100 ml', 'Two Camels Cup with Handle 100ML - Blue', NULL, NULL, 17, 'imported_image18.jpg', NULL, NULL, '42.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:10'),
+(28, 'فنجان الجملين وردي بيد tow camel cup 100 ml', 'Two Camels Cup with Handle 100ML - Pink', NULL, NULL, 17, 'imported_image18.jpg', NULL, NULL, '42.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(29, 'فنجان الجملين اصفر بيد tow camel cup 100 ml', 'Two Camels Cup with Handle 100ML - Yellow', NULL, NULL, 17, 'imported_image18.jpg', NULL, NULL, '42.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(30, 'فنجان الجملين اخضر بدون يد tow camel cup 100 ml', 'Two Camels Cup without Handle 100ML - Green', NULL, NULL, 17, NULL, NULL, NULL, '37.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(31, 'فنجان الجملين ازرق بدون يد tow camel cup 100 ml', 'Two Camels Cup without Handle 100ML - Blue', NULL, NULL, 17, NULL, NULL, NULL, '37.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(32, 'فنجان الجملين وردي بدون يد tow camel cup 100 ml', 'Two Camels Cup without Handle 100ML - Pink', NULL, NULL, 17, NULL, NULL, NULL, '37.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:11'),
+(33, 'فنجان الجملين اصفر بدون يد tow camel cup 100 ml', 'Two Camels Cup without Handle 100ML - Yellow', NULL, NULL, 17, NULL, NULL, NULL, '37.00', NULL, NULL, NULL, 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(34, 'فنجان جمل الهلال اصفر cup camel star and moon 180 ml', 'Camel Star & Moon Cup 180ML - Yellow', NULL, NULL, 17, 'imported_image19.jpeg', NULL, NULL, '39.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:11'),
+(35, 'فنجان جمل الهلال ابيض cup camel moon 180 ml', 'Camel Star & Moon Cup 180ML - White', NULL, NULL, 17, 'imported_image20.jpeg', NULL, NULL, '39.00', NULL, NULL, NULL, 0, '8.00', '5.00', 1, '2026-09-22 13:38:11'),
+(36, 'طقم 6 كوب شاي فرنسي DURALEX كبير', 'DURALEX French Tea Glass Set of 6 - Large', NULL, NULL, 17, 'imported_image22.jpeg', NULL, NULL, '37.00', NULL, NULL, NULL, 0, '5.00', '5.00', 1, '2026-09-22 13:38:11'),
+(37, 'طقم 4 كوب شاي صغير EURALEX', 'EURALEX Tea Glass Set of 4 - Small', NULL, NULL, 17, NULL, NULL, NULL, '22.00', NULL, NULL, NULL, 0, '7.00', '5.00', 1, '2026-09-22 13:38:11'),
+(38, 'فنجان DAHANA الفهد', 'DAHANA Cup - Cheetah', NULL, NULL, 17, NULL, NULL, NULL, '85.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:11'),
+(39, 'طقم استكانة 6 كوب بيد منقوش', 'Patterned Tea Glass Set of 6 with Handle', NULL, NULL, 17, NULL, NULL, NULL, '35.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:11'),
+(40, 'جهاز تحضير الشاي المزدوج GREAN LINE', 'GREEN LINE Dual Tea Maker', NULL, NULL, 18, 'imported_image24.jpeg', NULL, NULL, '335.00', NULL, NULL, '237.00', 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(41, 'غلاية شاي كهربائية بحامل grean lain le presso', 'GREEN LINE Le Presso Electric Tea Kettle with Stand', NULL, NULL, 18, 'imported_image27.png', NULL, NULL, '385.00', NULL, NULL, NULL, 0, '8.00', '5.00', 1, '2026-09-22 13:38:11'),
+(42, 'طقم قهوة وشاي DLC', 'DLC Tea & Coffee Set', NULL, NULL, 18, 'imported_image25.jpeg', NULL, NULL, '320.00', NULL, NULL, '232.00', 0, '2.00', '5.00', 1, '2026-09-22 13:38:11'),
+(43, 'دلة قهوة ستيل DLC', 'DLC Steel Coffee Dallah', NULL, NULL, 18, 'imported_image26.jpeg', NULL, NULL, '210.00', NULL, NULL, '110.00', 0, '6.00', '5.00', 1, '2026-09-22 13:38:11'),
+(44, 'ابريق شاي صيني منقوش ورد معتق 10 - نقش يدوي (الثريا )', 'Chinese Teapot - Antique Rose Pattern, Hand-Engraved (Chandelier)', NULL, NULL, 19, 'imported_image28.jpeg', NULL, NULL, '75.00', NULL, NULL, NULL, 0, '34.00', '5.00', 1, '2026-09-22 13:38:12'),
+(45, 'ابريق شاي صيني مفنوخ منقوش ورد معتق 1 لتر  0 - نقش يدوي', 'Chinese Teapot - Antique Rose Pattern, Hand-Engraved, 1L', NULL, NULL, 19, 'imported_image29.png', NULL, NULL, '140.00', NULL, NULL, NULL, 0, '2.00', '5.00', 1, '2026-09-22 13:38:12'),
+(46, 'ابريق شاي صيني  منقوش حب الرمان 10-  500 مل', 'Chinese Teapot - Pomegranate Pattern, 500ML', NULL, NULL, 19, 'imported_image30.png', NULL, NULL, '75.00', NULL, NULL, NULL, 0, '18.00', '5.00', 1, '2026-09-22 13:38:12'),
+(47, 'دلة قهوة ذهبي كبير', 'Gold Coffee Dallah - Large', NULL, NULL, 19, NULL, NULL, NULL, '207.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:12'),
+(48, 'دلة قهوة ذهبي وسط', 'Gold Coffee Dallah - Medium', NULL, NULL, 19, NULL, NULL, NULL, '164.00', NULL, NULL, NULL, 0, '3.00', '5.00', 1, '2026-09-22 13:38:12'),
+(49, 'دلة قهوة ذهبي صغير', 'Gold Coffee Dallah - Small', NULL, NULL, 19, NULL, NULL, NULL, '117.00', NULL, NULL, NULL, 0, '2.00', '5.00', 1, '2026-09-22 13:38:12'),
+(50, 'شاي راكان - سيلاني فاخر 250 جرام', 'Rakan Tea - Premium Ceylon 250g', NULL, NULL, 20, 'imported_image42.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '11.00', '5.00', 1, '2026-09-22 13:38:12'),
+(51, 'شاي الزهاوي', 'Al Zahawi Tea', NULL, NULL, 20, 'imported_image43.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '13.00', '5.00', 1, '2026-09-22 13:38:12'),
+(52, 'شاي بصمة الأمانة – علبة حديد مربع 250 غرام', 'Basmat Al Amana Tea - Square Tin, 250g', NULL, NULL, 20, 'imported_image44.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '12.00', '5.00', 1, '2026-09-22 13:38:12'),
+(53, 'شاي أربع 7777', 'Arba\' 7777 Tea', NULL, NULL, 20, 'imported_image45.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '3.00', '5.00', 1, '2026-09-22 13:38:12'),
+(54, 'رأس الحصان – شاي أسود سيلاني نقي 350 غرام', 'Horse Head - Pure Ceylon Black Tea 350g', NULL, NULL, 20, 'imported_image46.png', NULL, NULL, '40.00', NULL, NULL, NULL, 0, '14.00', '5.00', 1, '2026-09-22 13:38:12'),
+(55, 'شاي السليمانية بالهيل – أسود 500 غرام', 'Al Sulaimaniya Cardamom Black Tea 500g', NULL, NULL, 20, 'imported_image47.png', NULL, NULL, '45.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:12'),
+(56, 'كرك وضاح 500 غرام', 'Wadah Karak Tea 500g', NULL, NULL, 20, 'imported_image48.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:12'),
+(57, 'قهوة أبو ظبي (رمضان كريم)', 'Abu Dhabi Coffee (Ramadan Kareem Edition)', NULL, NULL, 20, NULL, NULL, NULL, '50.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:12'),
+(58, 'شاي مسرى  نخب أّول  شاي سيلاني – عبوة معدنية 250 جم', 'Masra Premium Ceylon Tea - Metal Tin 250g', NULL, NULL, 20, 'imported_image49.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '16.00', '5.00', 1, '2026-09-22 13:38:12'),
+(59, 'شاي أربع 7777 – برميل 500 غرام', 'Arba\' 7777 Tea - Barrel 500g', NULL, NULL, 20, 'imported_image50.png', NULL, NULL, '66.00', NULL, NULL, NULL, 0, '8.00', '5.00', 1, '2026-09-22 13:38:12'),
+(60, 'شاي دسمان إكسترا سبيشال – 290 جم', 'Dasman Extra Special Tea 290g', NULL, NULL, 20, 'imported_image51.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '20.00', '5.00', 1, '2026-09-22 13:38:12'),
+(61, 'شاي السهمين الذهبي السيلاني - 400غ', 'Al Sahmain Gold Ceylon Tea 400g', NULL, NULL, 20, 'imported_image52.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '8.00', '5.00', 1, '2026-09-22 13:38:12'),
+(62, '(360 غرام)شاي الصمان الذهبي', 'Al Samman Gold Tea 360g', NULL, NULL, 20, 'imported_image53.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '11.00', '5.00', 1, '2026-09-22 13:38:12'),
+(63, 'شاي حاجم السيلاني الممتاز - الغوري', 'Hajim Premium Ceylon Tea - Al Ghouri', NULL, NULL, 20, 'imported_image54.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '5.00', '5.00', 1, '2026-09-22 13:38:13'),
+(64, 'شاي تكريت العراقي الأصيل- 290 غ', 'Tikrit Original Iraqi Tea 290g', NULL, NULL, 20, 'imported_image55.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(65, 'شاي الجبلي(200 غرام)', 'Al Jabali Tea 200g', NULL, NULL, 20, 'imported_image56.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '9.00', '5.00', 1, '2026-09-22 13:38:13'),
+(66, 'شاي السهمين – ورقة كاملة 290 غرام', 'Al Sahmain Tea - Full Leaf 290g', NULL, NULL, 20, 'imported_image57.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(67, 'شاي خبت السيلاني الكلاسيكي – 250 جم', 'Khabt Classic Ceylon Tea 250g', NULL, NULL, 20, 'imported_image58.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(68, 'شاي الشايب – علبة معدنية 250 غرام', 'Al Shayeb Tea - Metal Tin 250g', NULL, NULL, 20, 'imported_image59.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '8.00', '5.00', 1, '2026-09-22 13:38:13'),
+(69, 'شاي أربع 7777(250 غرام)', 'Arba\' 7777 Tea 250g', NULL, NULL, 20, 'imported_image60.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:13'),
+(70, 'رأس الحصان – شاي أسود سيلاني نقي 300 غرام', 'Horse Head - Pure Ceylon Black Tea 300g', NULL, NULL, 20, 'imported_image61.png', NULL, NULL, '40.00', NULL, NULL, NULL, 0, '7.00', '5.00', 1, '2026-09-22 13:38:13'),
+(71, 'شاي البدو الفاخر - 250 غ', 'Al Badu Premium Tea 250g', NULL, NULL, 20, 'imported_image62.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '11.00', '5.00', 1, '2026-09-22 13:38:13'),
+(72, 'شاي الطراد –‏ 250 غرام', 'Al Tarrad Tea 250g', NULL, NULL, 20, 'imported_image63.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(73, 'شاي الطراد(250غرام)', 'Al Tarrad Tea 250g (Tin)', NULL, NULL, 20, 'imported_image64.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '1.00', '5.00', 1, '2026-09-22 13:38:13'),
+(74, 'شاي أربع 7777 – علبة معدنية 250غرام', 'Arba\' 7777 Tea - Metal Tin 250g', NULL, NULL, 20, 'imported_image65.png', NULL, NULL, '41.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(75, 'شاي الصمان الفاخر –‏ 100 كيس شاي', 'Al Samman Premium Tea - 100 Tea Bags', NULL, NULL, 20, 'imported_image66.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '3.00', '5.00', 1, '2026-09-22 13:38:13'),
+(76, 'شاي هرمـي أعشاب الألب – فورسينس من تيكان | 20 كيس هرمي (40غ)', 'Alpine Herbs Pyramid Tea - Forsince by Teekanne, 20 Pyramid Bags (40g)', NULL, NULL, 20, 'imported_image67.png', NULL, NULL, '36.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(77, 'العطار – جينسينغ، قرفة، وزنجبيل (20 ظرف)', 'Al Attar - Ginseng, Cinnamon & Ginger (20 Sachets)', NULL, NULL, 20, 'imported_image68.png', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(78, 'أوراق الزيتون (العطار)', 'Olive Leaf Tea (Al Attar)', NULL, NULL, 20, 'imported_image69.png', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(79, 'شاي أخضر (قرفة وزنجبيل)', 'Green Tea (Cinnamon & Ginger)', NULL, NULL, 20, 'imported_image70.jpeg', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(80, 'نعناع المدينة (العطار)', 'Medina Mint (Al Attar)', NULL, NULL, 20, 'imported_image71.png', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(81, 'ماتشا (شاي أخضر ياباني)', 'Matcha (Japanese Green Tea)', NULL, NULL, 20, 'imported_image72.png', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(82, 'شاي أخضر ليمون (العطار)', 'Green Tea Lemon (Al Attar)', NULL, NULL, 20, NULL, NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(83, 'ورق الجوافة (العطار)', 'Guava Leaf Tea (Al Attar)', NULL, NULL, 20, NULL, NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:13'),
+(84, 'ميرمية العطار', 'Sage Tea (Al Attar)', NULL, NULL, 20, NULL, NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(85, 'العطار – رمان (20 ظرف)', 'Al Attar - Pomegranate (20 Sachets)', NULL, NULL, 20, 'imported_image74.jpeg', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(86, 'زعتر بري – العطار', 'Wild Thyme Tea (Al Attar)', NULL, NULL, 20, 'imported_image75.png', NULL, NULL, '14.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(87, 'شاي روويبوس من جنوب أفريقيا', 'Rooibos Tea from South Africa', '', NULL, 20, 'imported_image76.png', '', '', '27.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(88, 'شاي فواكه الكرز الحلو – تيكان (20 كيس)', 'Sweet Cherry Fruit Tea - Teekanne (20 Bags)', NULL, NULL, 20, 'imported_image77.png', NULL, NULL, '27.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(89, 'شاي تي فيكس – تيكان | 20 كيس', 'Tea Vix - Teekanne, 20 Bags', NULL, NULL, 20, 'imported_image78.png', NULL, NULL, '22.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(90, 'شاي أخضر تي فيكس – تيكان |  20 كيس مزدوج', 'Green Tea Vix - Teekanne, 20 Double Bags', NULL, NULL, 20, 'imported_image79.png', NULL, NULL, '23.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(91, 'شاي ابدأ يومك – تيكان | 20 كيس', 'Start Your Day Tea - Teekanne, 20 Bags', NULL, NULL, 20, 'imported_image80.png', NULL, NULL, '32.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(92, 'شاي المريمية الهادئ والمريح 20 كيس ×‏ 1.8غ (36غ)', 'Calming Sage Tea - 20 Bags x 1.8g (36g)', NULL, NULL, 20, 'imported_image81.png', NULL, NULL, '32.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(93, 'شاي فواكه خوخ وباشن فروت طبيعي 100% – تيكان | 20 كيس', '100% Natural Peach & Passion Fruit Tea - Teekanne, 20 Bags', NULL, NULL, 20, 'imported_image82.png', NULL, NULL, '27.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(94, 'شاي السبع المغربي (200 غرام )', 'Moroccan Sabaa Tea 200g', NULL, NULL, 20, 'imported_image83.png', NULL, NULL, '28.00', NULL, NULL, NULL, 0, '49.00', '5.00', 1, '2026-09-22 13:38:14'),
+(95, 'كيك دحانة DAHANA CAKE PACK عادي', 'DAHANA Cake Pack - Original', '', NULL, 20, 'imported_image84.png', '', '', '29.00', NULL, NULL, NULL, 0, '42.00', '5.00', 1, '2026-09-22 13:38:14'),
+(96, 'كيك دحانة DAHANA CAKE PACK بالشكولاتة', 'DAHANA Cake Pack - Chocolate', NULL, NULL, 20, 'imported_image84.png', NULL, NULL, '29.00', NULL, NULL, NULL, 0, '0.00', '5.00', 1, '2026-09-22 13:38:14'),
+(97, 'شاي راس الحصان برميل', 'Horse Head Tea - Barrel', NULL, NULL, 20, NULL, NULL, NULL, '0.00', NULL, NULL, NULL, 0, '4.00', '5.00', 1, '2026-09-22 13:38:14'),
+(98, 'غطاء غاز جلد طبيعي كبير Gas cover', 'Genuine Leather Gas Cylinder Cover - Large', NULL, NULL, 21, 'imported_image33.png', NULL, NULL, '22.00', NULL, NULL, NULL, 0, '44.00', '5.00', 1, '2026-09-22 13:38:14'),
+(99, 'غطاء غاز جلد طبيعي صغير Gas cover', 'Genuine Leather Gas Cylinder Cover - Small', NULL, NULL, 21, 'imported_image34.png', NULL, NULL, '16.00', NULL, NULL, NULL, 0, '22.00', '5.00', 1, '2026-09-22 13:38:14');
+INSERT INTO `products` (`id`, `name_ar`, `name_en`, `sku`, `barcode`, `category_id`, `image`, `description_ar`, `description_en`, `retail_price`, `offer_price`, `wholesale_price`, `cost_price`, `has_variants`, `stock_qty`, `min_stock_alert`, `is_active`, `created_at`) VALUES
+(100, 'راس غاز DAHANA MA190', 'DAHANA Gas Burner Head MA190', NULL, NULL, 21, 'imported_image31.jpeg', NULL, NULL, '30.00', NULL, NULL, NULL, 0, '46.00', '5.00', 1, '2026-09-22 13:38:14'),
+(101, 'راس غاز DAHANA MA192', 'DAHANA Gas Burner Head MA192', NULL, NULL, 21, 'imported_image32.jpeg', NULL, NULL, '40.00', NULL, NULL, NULL, 0, '44.00', '5.00', 1, '2026-09-22 13:38:14'),
+(102, 'مصباح طاولة multifunctoin charging test led كبير', 'Multifunction LED Charging Table Lamp - Large', NULL, NULL, 21, NULL, NULL, NULL, '67.00', NULL, NULL, NULL, 0, '7.00', '5.00', 1, '2026-09-22 13:38:14'),
+(103, 'مصباح طاولة  charging led lamb وسط', 'LED Charging Table Lamp - Medium', NULL, NULL, 21, NULL, NULL, NULL, '58.00', NULL, NULL, NULL, 0, '5.00', '5.00', 1, '2026-09-22 13:38:14'),
+(104, 'مصباح طاولة  charging led desk lamb صغير', 'LED Charging Desk Lamp - Small', NULL, NULL, 21, NULL, NULL, NULL, '42.00', NULL, NULL, NULL, 0, '7.00', '5.00', 1, '2026-09-22 13:38:14'),
+(115, 'شنطة عدة الشاي والقهوة الكاملة معدن', 'Complete Tea & Coffee Set Bag - Metal', '', NULL, 21, 'prod_1790438249_6ab7eb697f212.webp', '', '', '140.00', NULL, NULL, NULL, 0, '0.00', '0.00', 0, '2026-09-26 19:57:29');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_variants`
+--
+
+CREATE TABLE `product_variants` (
+  `id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `color_ar` varchar(60) DEFAULT NULL,
+  `color_en` varchar(60) DEFAULT NULL,
+  `size` varchar(60) DEFAULT NULL,
+  `sku` varchar(100) DEFAULT NULL,
+  `barcode` varchar(100) DEFAULT NULL,
+  `retail_price` decimal(10,2) DEFAULT NULL COMMENT 'Null = use parent price',
+  `offer_price` decimal(10,2) DEFAULT NULL,
+  `wholesale_price` decimal(10,2) DEFAULT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
+  `stock_qty` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `image` varchar(255) DEFAULT NULL,
+  `sort` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchase_invoices`
+--
+
+CREATE TABLE `purchase_invoices` (
+  `id` int(11) NOT NULL,
+  `invoice_type` enum('goods','service') NOT NULL DEFAULT 'goods',
+  `supplier_name` varchar(200) DEFAULT NULL,
+  `invoice_ref` varchar(100) DEFAULT NULL,
+  `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `payment_method` enum('cash','card','transfer') NOT NULL DEFAULT 'cash',
+  `purchase_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchase_invoice_items`
+--
+
+CREATE TABLE `purchase_invoice_items` (
+  `id` int(11) NOT NULL,
+  `purchase_invoice_id` int(11) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `quantity` decimal(10,2) NOT NULL DEFAULT 1.00,
+  `unit_price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `line_total` decimal(10,2) NOT NULL DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `returns`
+--
+
+CREATE TABLE `returns` (
+  `id` int(11) NOT NULL,
+  `sale_id` int(11) NOT NULL,
+  `processed_by` int(11) DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `refund_method` enum('cash','card','transfer') DEFAULT NULL COMMENT 'How the refund was actually given back (F-08)',
+  `total` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `returns`
+--
+
+INSERT INTO `returns` (`id`, `sale_id`, `processed_by`, `reason`, `refund_method`, `total`, `created_at`) VALUES
+(3, 14, 26, 'تجريب الطابعة', 'cash', '75.00', '2026-09-24 16:51:24'),
+(4, 16, 26, 'خطء اثناء الطباعة', 'card', '42.00', '2026-09-25 15:55:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `return_items`
+--
+
+CREATE TABLE `return_items` (
+  `id` int(11) NOT NULL,
+  `return_id` int(11) NOT NULL,
+  `sale_item_id` int(11) NOT NULL,
+  `quantity` decimal(10,2) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `total` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `return_items`
+--
+
+INSERT INTO `return_items` (`id`, `return_id`, `sale_item_id`, `quantity`, `unit_price`, `total`) VALUES
+(3, 3, 16, '1.00', '75.00', '75.00'),
+(4, 4, 18, '1.00', '42.00', '42.00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sales`
+--
+
+CREATE TABLE `sales` (
+  `id` int(11) NOT NULL,
+  `invoice_number` varchar(30) NOT NULL,
+  `client_uid` varchar(64) DEFAULT NULL COMMENT 'معرف فريد من المتصفح لمنع تكرار فواتير الأوفلاين عند المزامنة',
+  `exhibition_id` int(11) DEFAULT NULL,
+  `cashier_id` int(11) DEFAULT NULL,
+  `customer_name` varchar(100) DEFAULT NULL,
+  `customer_phone` varchar(30) DEFAULT NULL,
+  `payment_method` enum('cash','card','transfer','mixed') NOT NULL DEFAULT 'cash',
+  `cash_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `card_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `transfer_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `discount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `notes` text DEFAULT NULL,
+  `status` enum('completed','returned','partial_return') NOT NULL DEFAULT 'completed',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`id`, `invoice_number`, `client_uid`, `exhibition_id`, `cashier_id`, `customer_name`, `customer_phone`, `payment_method`, `cash_amount`, `card_amount`, `transfer_amount`, `subtotal`, `discount`, `total`, `notes`, `status`, `created_at`) VALUES
+(14, 'INV-260924-DD598', NULL, 1, 26, '', '', 'cash', '75.00', '0.00', '0.00', '75.00', '0.00', '75.00', '', 'returned', '2026-09-24 16:26:29'),
+(15, 'INV-260924-48554', 'f0ce4488-d594-4f41-bef8-9a99bd192d76', 1, 26, '', '', 'card', '0.00', '29.00', '0.00', '29.00', '0.00', '29.00', '', 'completed', '2026-09-24 16:43:52'),
+(16, 'INV-260925-DE711', NULL, 1, 27, '', '', 'card', '0.00', '84.00', '0.00', '84.00', '0.00', '84.00', '', 'partial_return', '2026-09-25 15:48:59'),
+(17, 'INV-260925-4D8D4', NULL, 1, 27, '', '', 'card', '0.00', '41.00', '0.00', '41.00', '0.00', '41.00', '', 'completed', '2026-09-25 16:45:09'),
+(18, 'INV-260925-00C03', NULL, 1, 27, '', '', 'card', '0.00', '41.00', '0.00', '41.00', '0.00', '41.00', '', 'completed', '2026-09-25 19:35:21'),
+(19, 'INV-260925-E3E2B', NULL, 1, 27, '', '', 'card', '0.00', '29.00', '0.00', '29.00', '0.00', '29.00', '', 'completed', '2026-09-25 21:36:08'),
+(20, 'INV-260925-4DA9C', NULL, 1, 27, '', '', 'card', '0.00', '79.00', '0.00', '79.00', '0.00', '79.00', '', 'completed', '2026-09-25 22:42:16'),
+(21, 'INV-260926-91591', NULL, 1, 27, '', '', 'card', '0.00', '37.00', '0.00', '37.00', '0.00', '37.00', '', 'completed', '2026-09-26 16:04:27'),
+(22, 'INV-260926-D7DD6', NULL, 1, 27, '', '', 'cash', '29.00', '0.00', '0.00', '29.00', '0.00', '29.00', '', 'completed', '2026-09-26 16:26:24'),
+(23, 'INV-260926-97740', NULL, 1, 27, '', '', 'card', '0.00', '85.00', '0.00', '85.00', '0.00', '85.00', '', 'completed', '2026-09-26 16:56:01'),
+(24, 'INV-260926-65FA6', NULL, 1, 27, '', '', 'card', '0.00', '27.00', '0.00', '27.00', '0.00', '27.00', '', 'completed', '2026-09-26 19:48:32'),
+(25, 'INV-260926-859FB', NULL, 1, 27, '', '', 'card', '0.00', '405.00', '0.00', '405.00', '0.00', '405.00', '', 'completed', '2026-09-26 19:59:42'),
+(26, 'INV-260926-3B95F', NULL, 1, 27, '', '', 'card', '0.00', '29.00', '0.00', '29.00', '0.00', '29.00', '', 'completed', '2026-09-26 20:24:53'),
+(27, 'INV-260926-4DDD7', 'e61f4e39-3d0f-48e6-9d6f-fbf1eab85737', 1, 27, '', '', 'card', '0.00', '27.00', '0.00', '27.00', '0.00', '27.00', '', 'completed', '2026-09-26 22:46:50'),
+(28, 'INV-260926-21660', NULL, 1, 27, '', '', 'card', '0.00', '76.00', '0.00', '76.00', '0.00', '76.00', '', 'completed', '2026-09-26 22:50:59'),
+(29, 'INV-260927-F2995', NULL, 1, 27, '', '', 'card', '0.00', '41.00', '0.00', '41.00', '0.00', '41.00', '', 'completed', '2026-09-27 17:44:28'),
+(30, 'INV-260927-CD949', NULL, 1, 27, '', '', 'card', '0.00', '263.00', '0.00', '263.00', '0.00', '263.00', '', 'completed', '2026-09-27 19:20:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sale_items`
+--
+
+CREATE TABLE `sale_items` (
+  `id` int(11) NOT NULL,
+  `sale_id` int(11) NOT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `variant_id` int(11) DEFAULT NULL,
+  `product_name_ar` varchar(200) NOT NULL,
+  `product_name_en` varchar(200) NOT NULL,
+  `color_ar` varchar(60) DEFAULT NULL,
+  `color_en` varchar(60) DEFAULT NULL,
+  `size` varchar(60) DEFAULT NULL,
+  `sku` varchar(100) DEFAULT NULL,
+  `quantity` decimal(10,2) NOT NULL DEFAULT 1.00,
+  `unit_price` decimal(10,2) NOT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL COMMENT 'Snapshot of product/variant cost_price at the moment of sale (F-07)',
+  `price_type` enum('retail','offer','wholesale') NOT NULL DEFAULT 'retail',
+  `discount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sale_items`
+--
+
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `variant_id`, `product_name_ar`, `product_name_en`, `color_ar`, `color_en`, `size`, `sku`, `quantity`, `unit_price`, `cost_price`, `price_type`, `discount`, `total`) VALUES
+(16, 14, 46, NULL, 'ابريق شاي صيني  منقوش حب الرمان 10-  500 مل', 'Chinese Teapot - Pomegranate Pattern, 500ML', NULL, NULL, NULL, NULL, '1.00', '75.00', NULL, 'retail', '0.00', '75.00'),
+(17, 15, 95, NULL, 'كيك دحانة DAHANA CAKE PACK عادي', 'DAHANA Cake Pack - Original', NULL, NULL, NULL, NULL, '1.00', '29.00', NULL, 'retail', '0.00', '29.00'),
+(18, 16, 27, NULL, 'فنجان الجملين ازرق بيد tow camel cup 100 ml', 'Two Camels Cup with Handle 100ML - Blue', NULL, NULL, NULL, NULL, '1.00', '42.00', NULL, 'retail', '0.00', '42.00'),
+(19, 16, 19, NULL, 'فنجان جمل الصحراء DESERT CAMEL 250 ML مضلع', 'Desert Camel Cup 250ML - Ribbed', NULL, NULL, NULL, NULL, '1.00', '42.00', NULL, 'retail', '0.00', '42.00'),
+(20, 17, 69, NULL, 'شاي أربع 7777(250 غرام)', 'Arba\' 7777 Tea 250g', NULL, NULL, NULL, NULL, '1.00', '41.00', NULL, 'retail', '0.00', '41.00'),
+(21, 18, 69, NULL, 'شاي أربع 7777(250 غرام)', 'Arba\' 7777 Tea 250g', NULL, NULL, NULL, NULL, '1.00', '41.00', NULL, 'retail', '0.00', '41.00'),
+(22, 19, 95, NULL, 'كيك دحانة DAHANA CAKE PACK عادي', 'DAHANA Cake Pack - Original', NULL, NULL, NULL, '', '1.00', '29.00', NULL, 'retail', '0.00', '29.00'),
+(23, 20, 19, NULL, 'فنجان جمل الصحراء DESERT CAMEL 250 ML مضلع', 'Desert Camel Cup 250ML - Ribbed', NULL, NULL, NULL, NULL, '1.00', '42.00', NULL, 'retail', '0.00', '42.00'),
+(24, 20, 20, NULL, 'فنجان جمل الصحراء DESERT CAMEL 180 ML مضلع', 'Desert Camel Cup 180ML - Ribbed', NULL, NULL, NULL, NULL, '1.00', '37.00', NULL, 'retail', '0.00', '37.00'),
+(25, 21, 32, NULL, 'فنجان الجملين وردي بدون يد tow camel cup 100 ml', 'Two Camels Cup without Handle 100ML - Pink', NULL, NULL, NULL, NULL, '1.00', '37.00', NULL, 'retail', '0.00', '37.00'),
+(26, 22, 95, NULL, 'كيك دحانة DAHANA CAKE PACK عادي', 'DAHANA Cake Pack - Original', NULL, NULL, NULL, '', '1.00', '29.00', NULL, 'retail', '0.00', '29.00'),
+(27, 23, 10, NULL, 'طقم فنجان DAHANA وردة لون اخضر', 'DAHANA Cup Set - Rose, Green', NULL, NULL, NULL, NULL, '1.00', '85.00', NULL, 'retail', '0.00', '85.00'),
+(28, 24, 23, NULL, 'فنجان ابيض منقوش cup camel 120 ml', 'White Patterned Camel Cup 120ML', NULL, NULL, NULL, NULL, '1.00', '27.00', NULL, 'retail', '0.00', '27.00'),
+(29, 25, 115, NULL, 'شنطة عدة الشاي والقهوة الكاملة معدن', 'Complete Tea & Coffee Set Bag - Metal', NULL, NULL, NULL, '', '1.00', '140.00', NULL, 'retail', '0.00', '140.00'),
+(30, 25, 1, NULL, 'شنطة القهوة الكاملة', 'Complete Coffee Bag', NULL, NULL, NULL, NULL, '1.00', '265.00', NULL, 'retail', '0.00', '265.00'),
+(31, 26, 95, NULL, 'كيك دحانة DAHANA CAKE PACK عادي', 'DAHANA Cake Pack - Original', NULL, NULL, NULL, '', '1.00', '29.00', NULL, 'retail', '0.00', '29.00'),
+(32, 27, 25, NULL, 'فنجان بني منقوش Browen cup 120 ml', 'Brown Patterned Cup 120ML', NULL, NULL, NULL, NULL, '1.00', '27.00', NULL, 'retail', '0.00', '27.00'),
+(33, 28, 70, NULL, 'رأس الحصان – شاي أسود سيلاني نقي 300 غرام', 'Horse Head - Pure Ceylon Black Tea 300g', NULL, NULL, NULL, NULL, '1.00', '40.00', NULL, 'retail', '0.00', '40.00'),
+(34, 28, 68, NULL, 'شاي الشايب – علبة معدنية 250 غرام', 'Al Shayeb Tea - Metal Tin 250g', NULL, NULL, NULL, NULL, '1.00', '36.00', NULL, 'retail', '0.00', '36.00'),
+(35, 29, 71, NULL, 'شاي البدو الفاخر - 250 غ', 'Al Badu Premium Tea 250g', NULL, NULL, NULL, NULL, '1.00', '41.00', NULL, 'retail', '0.00', '41.00'),
+(36, 30, 95, NULL, 'كيك دحانة DAHANA CAKE PACK عادي', 'DAHANA Cake Pack - Original', NULL, NULL, NULL, '', '3.00', '29.00', NULL, 'retail', '0.00', '87.00'),
+(37, 30, 45, NULL, 'ابريق شاي صيني مفنوخ منقوش ورد معتق 1 لتر  0 - نقش يدوي', 'Chinese Teapot - Antique Rose Pattern, Hand-Engraved, 1L', NULL, NULL, NULL, NULL, '1.00', '140.00', NULL, 'retail', '0.00', '140.00'),
+(38, 30, 50, NULL, 'شاي راكان - سيلاني فاخر 250 جرام', 'Rakan Tea - Premium Ceylon 250g', NULL, NULL, NULL, NULL, '1.00', '36.00', NULL, 'retail', '0.00', '36.00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings`
+--
+
+CREATE TABLE `settings` (
+  `key` varchar(100) NOT NULL,
+  `value` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `treasury_transactions`
+--
+
+CREATE TABLE `treasury_transactions` (
+  `id` int(11) NOT NULL,
+  `type` enum('funding','expense','purchase_goods','purchase_service') NOT NULL DEFAULT 'expense',
+  `title` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `payment_method` enum('cash','card','transfer') NOT NULL DEFAULT 'cash',
+  `category` varchar(50) DEFAULT NULL,
+  `reference_type` varchar(50) DEFAULT NULL,
+  `reference_id` int(11) DEFAULT NULL,
+  `transaction_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `treasury_transactions`
+--
+
+INSERT INTO `treasury_transactions` (`id`, `type`, `title`, `amount`, `payment_method`, `category`, `reference_type`, `reference_id`, `transaction_date`, `notes`, `created_by`, `created_at`) VALUES
+(1, 'expense', 'مصروف معرض: تأجير جناح المعرض', '3333.00', 'cash', 'booth_rent', 'exhibition_expense', 1, '2026-09-24', '', 26, '2026-09-24 11:42:01'),
+(2, 'expense', 'مصروف معرض: غداء للموظفين', '200.00', 'cash', 'hospitality_food', 'exhibition_expense', 2, '2026-09-24', '', 26, '2026-09-24 18:57:43'),
+(3, 'expense', 'مصروف معرض: بترول للتويوتا كراون', '100.00', 'cash', 'shipping_transport', 'exhibition_expense', 3, '2026-09-25', '', 26, '2026-09-25 15:43:50'),
+(4, 'expense', 'مصروف معرض: اجار نقل بضاعة الى المعرض', '75.00', 'cash', 'shipping_transport', 'exhibition_expense', 4, '2026-09-25', '', 26, '2026-09-25 17:19:26'),
+(5, 'expense', 'مصروف معرض: اجرة نقل المحاسب اول يوم', '42.00', 'cash', 'shipping_transport', 'exhibition_expense', 5, '2026-09-25', '', 26, '2026-09-25 17:23:51'),
+(6, 'expense', 'مصروف معرض: بترول للسيارة', '50.00', 'cash', 'shipping_transport', 'exhibition_expense', 6, '2026-09-27', '', 26, '2026-09-28 12:09:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `name_ar` varchar(100) NOT NULL,
+  `name_en` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','cashier','stock','accountant') NOT NULL DEFAULT 'cashier',
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Custom fine-grained permissions'
+) ;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name_ar`, `name_en`, `email`, `password`, `role`, `permissions`, `is_active`, `created_at`) VALUES
+(4, 'المدير العام', 'Admin', 'admin@store.com', '$2y$10$wL4yPiofvAJXoaDlKgEXjeKnFjkSZJV8.9kNiKuytfS4M2KBccR2u', 'admin', NULL, 1, '2026-09-21 09:02:57'),
+(10, 'مصطفي محروس', 'MOSTAFA', 'mostafaa@gmail.com', '$2y$10$UmSFdFsJczaZfrXof433i.wwYBMUYuPzuatakeB1XA6qbYnlere9S', 'cashier', '[\"void_invoice\"]', 1, '2026-09-22 03:56:10'),
+(26, 'فارس', 'fares', 'fares@store.com', '$2y$12$/e8QWKV0jk1MM4fFiOUIieA1XTsth3grzG./fLhTlsVAFl5FMqSIu', 'admin', '[]', 1, '2026-09-24 00:25:50'),
+(27, 'كاشير', 'casher', 'casher@dahanaa.com', '$2y$12$p/qhfSR0.h8wxQFlVgWZ6em/u8lycNKbUI7NHSA5SGVhBpz2CA3Ka', 'cashier', '[]', 1, '2026-09-24 00:26:23');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `exhibitions`
+--
+ALTER TABLE `exhibitions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `start_date` (`start_date`),
+  ADD KEY `end_date` (`end_date`),
+  ADD KEY `status` (`status`);
+
+--
+-- Indexes for table `exhibition_expenses`
+--
+ALTER TABLE `exhibition_expenses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `exhibition_id` (`exhibition_id`),
+  ADD KEY `category` (`category`),
+  ADD KEY `expense_date` (`expense_date`);
+
+--
+-- Indexes for table `inventory_movements`
+--
+ALTER TABLE `inventory_movements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `variant_id` (`variant_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `created_at` (`created_at`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Indexes for table `products`
+--
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_barcode` (`barcode`),
+  ADD KEY `category_id` (`category_id`),
+  ADD KEY `barcode` (`barcode`),
+  ADD KEY `sku` (`sku`);
+
+--
+-- Indexes for table `product_variants`
+--
+ALTER TABLE `product_variants`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_barcode` (`barcode`),
+  ADD KEY `barcode` (`barcode`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Indexes for table `purchase_invoices`
+--
+ALTER TABLE `purchase_invoices`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `invoice_type` (`invoice_type`),
+  ADD KEY `purchase_date` (`purchase_date`);
+
+--
+-- Indexes for table `purchase_invoice_items`
+--
+ALTER TABLE `purchase_invoice_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `purchase_invoice_id` (`purchase_invoice_id`);
+
+--
+-- Indexes for table `returns`
+--
+ALTER TABLE `returns`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sale_id` (`sale_id`),
+  ADD KEY `processed_by` (`processed_by`);
+
+--
+-- Indexes for table `return_items`
+--
+ALTER TABLE `return_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `return_id` (`return_id`);
+
+--
+-- Indexes for table `sales`
+--
+ALTER TABLE `sales`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `invoice_number` (`invoice_number`),
+  ADD UNIQUE KEY `client_uid` (`client_uid`),
+  ADD KEY `created_at` (`created_at`),
+  ADD KEY `cashier_id` (`cashier_id`),
+  ADD KEY `fk_sales_exhibition` (`exhibition_id`);
+
+--
+-- Indexes for table `sale_items`
+--
+ALTER TABLE `sale_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sale_id` (`sale_id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `variant_id` (`variant_id`);
+
+--
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `treasury_transactions`
+--
+ALTER TABLE `treasury_transactions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `transaction_date` (`transaction_date`),
+  ADD KEY `type` (`type`),
+  ADD KEY `reference_type` (`reference_type`,`reference_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `exhibitions`
+--
+ALTER TABLE `exhibitions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `exhibition_expenses`
+--
+ALTER TABLE `exhibition_expenses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `inventory_movements`
+--
+ALTER TABLE `inventory_movements`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+
+--
+-- AUTO_INCREMENT for table `offers`
+--
+ALTER TABLE `offers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `products`
+--
+ALTER TABLE `products`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
+
+--
+-- AUTO_INCREMENT for table `product_variants`
+--
+ALTER TABLE `product_variants`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `purchase_invoices`
+--
+ALTER TABLE `purchase_invoices`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `purchase_invoice_items`
+--
+ALTER TABLE `purchase_invoice_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `returns`
+--
+ALTER TABLE `returns`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `return_items`
+--
+ALTER TABLE `return_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `sales`
+--
+ALTER TABLE `sales`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `sale_items`
+--
+ALTER TABLE `sale_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT for table `treasury_transactions`
+--
+ALTER TABLE `treasury_transactions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `exhibitions`
+--
+ALTER TABLE `exhibitions`
+  ADD CONSTRAINT `exhibitions_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `exhibition_expenses`
+--
+ALTER TABLE `exhibition_expenses`
+  ADD CONSTRAINT `exhibition_expenses_ibfk_1` FOREIGN KEY (`exhibition_id`) REFERENCES `exhibitions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `exhibition_expenses_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `inventory_movements`
+--
+ALTER TABLE `inventory_movements`
+  ADD CONSTRAINT `inventory_movements_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inventory_movements_ibfk_2` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inventory_movements_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `product_variants`
+--
+ALTER TABLE `product_variants`
+  ADD CONSTRAINT `product_variants_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `purchase_invoices`
+--
+ALTER TABLE `purchase_invoices`
+  ADD CONSTRAINT `purchase_invoices_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `purchase_invoice_items`
+--
+ALTER TABLE `purchase_invoice_items`
+  ADD CONSTRAINT `purchase_invoice_items_ibfk_1` FOREIGN KEY (`purchase_invoice_id`) REFERENCES `purchase_invoices` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `returns`
+--
+ALTER TABLE `returns`
+  ADD CONSTRAINT `returns_ibfk_1` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`),
+  ADD CONSTRAINT `returns_ibfk_2` FOREIGN KEY (`processed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `return_items`
+--
+ALTER TABLE `return_items`
+  ADD CONSTRAINT `return_items_ibfk_1` FOREIGN KEY (`return_id`) REFERENCES `returns` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `sales`
+--
+ALTER TABLE `sales`
+  ADD CONSTRAINT `fk_sales_exhibition` FOREIGN KEY (`exhibition_id`) REFERENCES `exhibitions` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`cashier_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `sale_items`
+--
+ALTER TABLE `sale_items`
+  ADD CONSTRAINT `sale_items_ibfk_1` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `sale_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `sale_items_ibfk_3` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `treasury_transactions`
+--
+ALTER TABLE `treasury_transactions`
+  ADD CONSTRAINT `treasury_transactions_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
