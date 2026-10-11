@@ -188,6 +188,40 @@ post_voucher('receipt', ['voucher_date' => '2026-10-10', 'party_id' => $lateCus,
 $rows = array_column(party_summaries('customer'), null, 'id');
 ok($rows[$lateCus]['status_key'] === 'closed', 'بعد السداد الكامل = مغلق');
 
+echo "▶ ملخصات الأطراف وعبارة الرصيد وأكتر منتج\n";
+$sumC = array_column(party_summaries('customer'), null, 'id');
+$led = db_one("SELECT COALESCE(SUM(CASE WHEN doc_type<>'opening' THEN invoice_amount END),0) AS inv, COALESCE(SUM(payment_amount),0) AS pd FROM customer_ledger WHERE customer_id=?", [$cus]);
+eqf($sumC[$cus]['total_invoiced'], (float)$led['inv'], 'إجمالي فواتير العميل = مجموع قيود الفواتير');
+eqf($sumC[$cus]['total_paid'], (float)$led['pd'], 'إجمالي المدفوع = مجموع قيود الدفع');
+eqf($sumC[$cus]['balance'], (float)$led['inv'] - (float)$led['pd'], 'الرصيد = الفواتير − المدفوع (بدون افتتاحي)');
+ok($sumC[$cus]['next_due'] !== null, 'أقرب موعد استحقاق موجود للعميل ذو فاتورة مفتوحة');
+[$t1, $c1] = balance_phrase('customer', 1500.5); ok($c1 === 'owes' && str_starts_with($t1, 'عليه'), 'عبارة العميل المدين: ' . $t1);
+[$t2, $c2] = balance_phrase('customer', -20); ok($c2 === 'credit' && str_starts_with($t2, 'له'), 'عبارة العميل الدائن: ' . $t2);
+[$t3, $c3] = balance_phrase('supplier', 300); ok($c3 === 'owes' && str_starts_with($t3, 'له علينا'), 'عبارة المورد: ' . $t3);
+[$t4, $c4] = balance_phrase('customer', 0); ok($c4 === 'zero', 'رصيد صفر');
+$top = top_selling_items(null, null, 3);
+ok(count($top) >= 1 && $top[0]['name'] === 'دقيق', 'أكتر منتج مبيعاً = الدقيق (' . ($top[0]['name'] ?? '?') . ')');
+eqf($top[0]['qty_sold'], (float)db_val("SELECT SUM(si.qty) FROM sale_items si JOIN sales s ON s.id=si.sale_id AND s.status='active' WHERE si.item_id=?", [$flour]), 'كمية الأكثر مبيعاً تستبعد الفواتير الملغاة');
+$none = top_selling_items('2000-01-01', '2000-01-02'); ok($none === [], 'فترة بدون مبيعات = قائمة فاضية');
+
+echo "▶ رمز الاسترداد (خدمات)\n";
+$cd = generate_recovery_code(); ok(preg_match('/^[A-Z2-9]{4}(-[A-Z2-9]{4}){3}$/', $cd) === 1, 'شكل الرمز: ' . $cd);
+$code = set_recovery_code(1);
+ok(password_verify(normalize_recovery_code($code), db_val('SELECT recovery_hash FROM users WHERE id=1')), 'الرمز مخزّن كهاش ويتطابق');
+ok(db_val('SELECT recovery_hash FROM users WHERE id=1') !== $code, 'الرمز مش مخزّن كنص صريح');
+$n2 = reset_password_with_code('t', strtolower($code), 'Newer@123456', 'Newer@123456');
+ok($n2 !== $code, 'الاسترجاع بيطلّع رمز جديد');
+throws(fn() => reset_password_with_code('t', $code, 'Newer@123456', 'Newer@123456'), 'غير صحيح', 'الرمز القديم مرفوض');
+throws(fn() => reset_password_with_code('nobody', $code, 'Newer@123456', 'Newer@123456'), 'غير صحيح', 'مستخدم غير موجود: نفس الرسالة العامة');
+db_exec('UPDATE users SET failed_logins=0, locked_until=NULL WHERE id=1');
+
+echo "▶ الصلاحيات حسب الدور\n";
+$allMods = array_keys(MODULES);
+ok(role_modules('admin') === $allMods, 'المدير: كل الوحدات');
+ok(!array_diff($allMods, role_modules('accountant')), 'المحاسب: كل وحدات الأعمال (' . count(role_modules('accountant')) . ')');
+ok(role_modules('warehouse') === ['items', 'stock'], 'أمين المخزن: الأصناف والمخزن فقط');
+ok(!in_array('users', role_modules('accountant'), true), 'إدارة المستخدمين خارج وحدات المحاسب');
+
 echo "▶ كشف الحساب: الرصيد الافتتاحي\n";
 $stm = party_statement('supplier', $sup);
 ok($stm['rows'][0]['doc_type'] === 'opening', 'الرصيد الافتتاحي أول سطر حتى لو تاريخه بعد الفواتير');
@@ -199,7 +233,7 @@ ok(!in_array('opening', array_column($stm2['rows'], 'doc_type'), true), 'كشف 
 eqf($stm2['closing'], party_balance('supplier', $sup), 'كشف بفترة مفتوحة النهاية: الرصيد الختامي = رصيد الحساب');
 
 // نسيب بيانات الاختبار في القاعدة عشان فحص الشاشات (tests/smoke.sh) — كلمة مرور المستخدم t
-db_exec('UPDATE users SET password_hash=? WHERE id=1', [password_hash('Test@12345', PASSWORD_DEFAULT)]);
+db_exec('UPDATE users SET password_hash=?, failed_logins=0, locked_until=NULL WHERE id=1', [password_hash('Test@12345', PASSWORD_DEFAULT)]);
 
 echo "\n══ النتيجة: $pass نجح، $fail فشل ══\n";
 exit($fail ? 1 : 0);

@@ -50,7 +50,7 @@ page_start('حركة المخزون', 'stock');
     <tr><td><?= fdate($r['move_date']) ?></td><td class="fw-bold"><?= e($r['item_name']) ?></td><td><?= e($r['wh_name']) ?></td><td><?= badge($types[$r['move_type']] ?? $r['move_type'], $r['qty'] > 0 ? 'success' : 'warning') ?></td>
       <td class="num amount-pos"><?= $r['qty'] > 0 ? qty($r['qty']) . ' ' . e($r['unit']) : '' ?></td><td class="num amount-neg"><?= $r['qty'] < 0 ? qty(-$r['qty']) . ' ' . e($r['unit']) : '' ?></td>
       <td><?php
-        if (in_array($r['ref_type'], ['purchase', 'sale'], true)) { echo '<a href="' . e(url($r['ref_type'] === 'purchase' ? 'purchases/view.php?id=' . (int)$r['ref_id'] : 'sales/view.php?id=' . (int)$r['ref_id'])) . '">' . e((string)$r['doc_no']) . '</a>'; }
+        if ((($r['ref_type'] === 'purchase' && can('purchases')) || ($r['ref_type'] === 'sale' && can('sales')))) { echo '<a href="' . e(url($r['ref_type'] === 'purchase' ? 'purchases/view.php?id=' . (int)$r['ref_id'] : 'sales/view.php?id=' . (int)$r['ref_id'])) . '">' . e((string)$r['doc_no']) . '</a>'; }
         else { echo e((string)$r['doc_no']); } ?></td>
       <td class="small text-muted"><?= e(trim(($r['reason'] ? $r['reason'] . ' — ' : '') . ($r['notes'] ?? ''), ' —')) ?></td>
       <td><?php if ($deletable): ?><form method="post" data-confirm="حذف الحركة؟"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$r['id'] ?>"><button class="btn btn-sm btn-link text-danger p-0"><i class="bi bi-trash"></i></button></form><?php endif; ?></td></tr>

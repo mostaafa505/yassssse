@@ -34,8 +34,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $data = ['username' => $username, 'full_name' => $name, 'role' => $role, 'permissions' => $perms, 'is_active' => $active];
             if ($pass !== '') { $data['password_hash'] = password_hash($pass, PASSWORD_DEFAULT); }
-            if ($id) { db_update('users', $id, $data); audit('update', 'users', $id, "$username ($role)" . ($pass !== '' ? ' + تغيير كلمة المرور' : '')); }
-            else { $nid = db_insert('users', $data + ['created_at' => now()]); audit('create', 'users', $nid, "$username ($role)"); }
+            $newCode = null;
+            if ($id) {
+                db_update('users', $id, $data);
+                if (!empty($_POST['new_recovery'])) { $newCode = set_recovery_code($id); }
+                audit('update', 'users', $id, "$username ($role)" . ($pass !== '' ? ' + تغيير كلمة المرور' : '') . ($newCode ? ' + رمز استرداد جديد' : ''));
+            } else {
+                $nid = db_insert('users', $data + ['created_at' => now()]);
+                $newCode = set_recovery_code($nid);   // كل مستخدم جديد بياخد رمز استرداد
+                audit('create', 'users', $nid, "$username ($role)");
+            }
+            if ($newCode) { show_recovery_once($newCode, $name); }
         });
         flash('success', 'تم حفظ المستخدم.');
         redirect('users/');
@@ -54,6 +63,8 @@ page_start($id ? 'تعديل مستخدم' : 'مستخدم جديد', 'users');
       <div class="row g-2" id="modsList"><?php foreach (MODULES as $k => $l): ?><div class="col-md-4 col-6"><div class="form-check"><input class="form-check-input mod" type="checkbox" name="modules[]" value="<?= $k ?>" id="m_<?= $k ?>"<?= in_array($k, $curMods, true) ? ' checked' : '' ?>><label class="form-check-label" for="m_<?= $k ?>"><?= e($l) ?></label></div></div><?php endforeach; ?></div>
       <div class="form-text">إدارة المستخدمين والإعدادات للمدير فقط ولا تُمنح.</div></div>
     <div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="is_active" value="1" id="act"<?= !empty($f['is_active']) ? ' checked' : '' ?>><label class="form-check-label" for="act">الحساب نشط</label></div></div>
+    <?php if ($id): ?><div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="new_recovery" value="1" id="nr"><label class="form-check-label" for="nr">إنشاء رمز استرداد جديد لهذا المستخدم (بيظهر مرة واحدة بعد الحفظ)</label></div></div>
+    <?php else: ?><div class="col-12"><div class="alert alert-info py-2 mb-0 small">هيتولّد للمستخدم <b>رمز استرداد</b> بعد الحفظ، بيظهر مرة واحدة — سلّمه له علشان يقدر يسترجع كلمة المرور لو نساها.</div></div><?php endif; ?>
   </div>
   <div class="mt-4 d-flex gap-2"><button class="btn btn-brand px-4"><i class="bi bi-check2"></i> حفظ</button><a class="btn btn-light" href="./">إلغاء</a></div>
 </form></div>

@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `failed_logins` int NOT NULL DEFAULT 0,
   `locked_until` datetime DEFAULT NULL,
+  `recovery_hash` varchar(255) DEFAULT NULL COMMENT 'هاش رمز استرداد كلمة المرور',
+  `recovery_set_at` datetime DEFAULT NULL,
   `last_login` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),

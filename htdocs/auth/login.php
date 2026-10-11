@@ -42,39 +42,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect(home_path());
     }
 }
-?><!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تسجيل الدخول | <?= e(setting('company_name', APP_NAME)) ?></title>
-<link rel="icon" type="image/svg+xml" href="<?= e(url('assets/favicon.svg')) ?>">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css')) ?>">
-</head>
-<body class="login-page">
-<div class="login-card">
-    <div class="top">
-        <img src="<?= e(url('assets/img/logo.svg')) ?>" alt="">
-        <h4><?= e(setting('company_name', APP_NAME)) ?></h4>
-        <small><?= e(setting('company_name_en', APP_NAME_EN)) ?></small>
-    </div>
-    <form method="post" class="p-4" autocomplete="on">
+$page_title = 'تسجيل الدخول';
+require __DIR__ . '/_auth_layout_top.php';
+?>
+    <form method="post" class="p-4 pt-3" autocomplete="on">
         <?= csrf_field() ?>
         <?php if ($error): ?><div class="alert alert-danger py-2"><?= e($error) ?></div><?php endif; ?>
         <div class="mb-3">
             <label class="form-label">اسم المستخدم</label>
             <div class="input-group"><span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input class="form-control" name="username" value="<?= e($username) ?>" required autofocus dir="ltr" autocomplete="username"></div>
+            <input class="form-control" name="username" value="<?= e($username) ?>" required autofocus dir="ltr" autocomplete="username" placeholder="admin"></div>
         </div>
         <div class="mb-4">
             <label class="form-label">كلمة المرور</label>
             <div class="input-group"><span class="input-group-text"><i class="bi bi-lock"></i></span>
-            <input class="form-control" type="password" name="password" required dir="ltr" autocomplete="current-password"></div>
+            <input class="form-control" type="password" name="password" required dir="ltr" autocomplete="current-password" placeholder="••••••••"></div>
         </div>
-        <button class="btn btn-brand w-100 py-2">دخول <i class="bi bi-box-arrow-in-left"></i></button>
+        <button class="btn btn-brand w-100 py-2 fs-6">دخول <i class="bi bi-box-arrow-in-left"></i></button>
     </form>
-</div>
-</body>
-</html>
+    <div class="auth-foot"><a href="<?= e(url('auth/forgot.php')) ?>"><i class="bi bi-question-circle"></i> نسيت كلمة المرور؟</a></div>
+<?php require __DIR__ . '/_auth_layout_bottom.php';

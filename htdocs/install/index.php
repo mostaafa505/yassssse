@@ -11,6 +11,7 @@ $lockFile = __DIR__ . '/installed.lock';
 $envPath  = dirname(__DIR__) . '/config/env.php';
 $errors = [];
 $done = false;
+$adminCode = '';
 
 if (is_file($lockFile)) {
     http_response_code(403);
@@ -60,15 +61,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 2) البيانات الأساسية
             $now = date('Y-m-d H:i:s');
             $pdo->beginTransaction();
-            $pdo->prepare('INSERT INTO users (username, full_name, password_hash, role, permissions, is_active, created_at) VALUES (?,?,?,?,NULL,1,?)')
-                ->execute([$v['admin_user'], $v['admin_name'], password_hash($adminPass, PASSWORD_DEFAULT), 'admin', $now]);
+            $adminCode = generate_recovery_code();   // رمز استرداد كلمة المرور (بيظهر مرة واحدة)
+            $pdo->prepare('INSERT INTO users (username, full_name, password_hash, role, permissions, is_active, recovery_hash, recovery_set_at, created_at) VALUES (?,?,?,?,NULL,1,?,?,?)')
+                ->execute([$v['admin_user'], $v['admin_name'], password_hash($adminPass, PASSWORD_DEFAULT), 'admin', password_hash(normalize_recovery_code($adminCode), PASSWORD_DEFAULT), $now, $now]);
             $pdo->exec("INSERT INTO warehouses (name, location, is_default, is_active) VALUES ('المخزن الرئيسي', NULL, 1, 1)");
             $pdo->exec("INSERT INTO treasury_accounts (name, acc_type, opening_balance, is_active) VALUES ('الخزينة النقدية', 'cash', 0, 1), ('الحساب البنكي', 'bank', 0, 1)");
             $st = $pdo->prepare('INSERT INTO settings (skey, svalue) VALUES (?, ?)');
             foreach ([
-                'company_name' => 'ماهر البحيري للاستيراد والتصدير', 'company_name_en' => 'Maher El-Beheiry Import & Export',
+                'company_name' => 'ماهر البحيري للاستيراد والتصدير', 'company_name_en' => 'Maher El Bahery Import & Export',
                 'company_phone' => '', 'company_address' => '', 'company_tax_no' => '', 'company_commercial_no' => '',
-                'invoice_footer' => 'شكراً لتعاملكم معنا', 'vat_rate' => '14', 'allow_negative_treasury' => '0',
+                'invoice_footer' => 'شكراً لتعاملكم معنا', 'vat_rate' => '14', 'allow_negative_treasury' => '0', 'schema_version' => '2',
             ] as $k => $val) { $st->execute([$k, $val]); }
             $pdo->commit();
 
@@ -92,22 +94,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>تثبيت النظام | <?= e(APP_NAME) ?></title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="<?= e(url('assets/favicon.svg')) ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
-<style>
-body{font-family:'Cairo',sans-serif;background:linear-gradient(135deg,#dcedfa,#bddcf4);min-height:100vh;display:flex;align-items:center;padding:24px 0}
-.card{border:0;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.brand{background:#eaf5fd;color:#1b4f7a;border-radius:16px 16px 0 0;padding:22px;text-align:center;border-bottom:4px solid #4aa8e8}
-.brand img{height:64px;border-radius:16px}.btn-brand{background:#1d6fae;border:0;color:#fff;font-weight:700}.btn-brand:hover{background:#185e94;color:#fff}
-</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="<?= e(url('assets/css/app.css')) ?>">
 </head>
 <body>
-<div class="container" style="max-width:640px">
-  <div class="card">
-    <div class="brand"><img src="<?= e(url('assets/img/logo.svg')) ?>" alt=""><h4 class="mt-2 mb-0 fw-bold"><?= e(APP_NAME) ?></h4><small>تثبيت النظام</small></div>
-    <div class="card-body p-4">
+<div class="auth-page">
+  <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+  <div class="auth-card" style="max-width:600px">
+    <div class="top"><img src="<?= e(url('assets/img/logo-full.svg')) ?>" alt=""></div>
+    <div class="title">تثبيت النظام</div>
+    <div class="p-4 pt-3">
     <?php if ($done): ?>
       <div class="alert alert-success"><b>تم التثبيت بنجاح ✅</b><br>اتعملت الجداول وحساب المدير، والمخزن الرئيسي، وحساب الخزينة والبنك.</div>
+      <div class="recovery-box mb-3"><div class="small text-muted mb-1"><b>رمز استرداد كلمة المرور</b> — احفظه الآن، مش هيظهر تاني</div><div class="recovery-code" dir="ltr"><?= e($adminCode) ?></div><div class="small text-muted mt-1">لو نسيت الباسوورد: «نسيت كلمة المرور؟» في شاشة الدخول ← اكتب الرمز ده.</div></div>
       <div class="alert alert-warning small">لأمان النظام: <b>امسح فولدر <code>install/</code></b> من السيرفر دلوقتي.</div>
       <a class="btn btn-brand w-100" href="<?= e(url('auth/login.php')) ?>">تسجيل الدخول</a>
     <?php else: ?>

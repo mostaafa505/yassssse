@@ -304,12 +304,18 @@ function party_summaries(string $partyType, string $where = '1=1', array $params
 {
     $c = party_cfg($partyType);
     $sql = "SELECT p.*, COALESCE(l.bal,0) AS balance, COALESCE(l.cnt,0) AS entries, l.last_date,
-                   COALESCE(o.overdue,0) AS overdue, o.max_days
+                   COALESCE(l.invoiced,0) AS total_invoiced, COALESCE(l.paid,0) AS total_paid, COALESCE(l.opening,0) AS opening_bal,
+                   COALESCE(o.overdue,0) AS overdue, o.max_days, COALESCE(q.open_amt,0) AS open_amt, q.next_due
             FROM {$c['table']} p
-            LEFT JOIN (SELECT {$c['fk']} AS pid, SUM(invoice_amount - payment_amount) AS bal, COUNT(*) AS cnt, MAX(entry_date) AS last_date
+            LEFT JOIN (SELECT {$c['fk']} AS pid, SUM(invoice_amount - payment_amount) AS bal, COUNT(*) AS cnt, MAX(entry_date) AS last_date,
+                              SUM(CASE WHEN doc_type<>'opening' THEN invoice_amount ELSE 0 END) AS invoiced,
+                              SUM(payment_amount) AS paid,
+                              SUM(CASE WHEN doc_type='opening' THEN invoice_amount - payment_amount ELSE 0 END) AS opening
                        FROM {$c['ledger']} GROUP BY {$c['fk']}) l ON l.pid = p.id
             LEFT JOIN (SELECT {$c['fk']} AS pid, SUM(total - paid_amount) AS overdue, MAX(DATEDIFF(?, due_date)) AS max_days
                        FROM {$c['inv']} WHERE status='active' AND total - paid_amount > 0.005 AND due_date < ? GROUP BY {$c['fk']}) o ON o.pid = p.id
+            LEFT JOIN (SELECT {$c['fk']} AS pid, SUM(total - paid_amount) AS open_amt, MIN(due_date) AS next_due
+                       FROM {$c['inv']} WHERE status='active' AND total - paid_amount > 0.005 GROUP BY {$c['fk']}) q ON q.pid = p.id
             WHERE $where ORDER BY p.name";
     $rows = db_all($sql, [today(), today(), ...$params]);
     foreach ($rows as &$r) { $r['status_key'] = party_status($r); }
@@ -856,4 +862,110 @@ function user_error_message(Throwable $e): string
     error_log('[mb] ' . get_class($e) . ': ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
     if ($e instanceof PDOException && ($e->errorInfo[1] ?? 0) == 1062) { return 'القيمة دي مسجّلة قبل كده (تكرار).'; }
     return DEBUG ? $e->getMessage() : 'حصل خطأ غير متوقع. حاول مرة أخرى، ولو تكرر بلّغ المسؤول.';
+}
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  ترقية هيكل قاعدة البيانات تلقائياً (بدون phpMyAdmin)
+// ════════════════════════════════════════════════════════════════════════════
+function column_exists(string $table, string $column): bool
+{
+    return (int)db_val('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?', [$table, $column]) > 0;
+}
+function run_migrations(): void
+{
+    try {
+        $v = (int)setting('schema_version', '1');
+        if ($v >= SCHEMA_VERSION) { return; }
+        if ($v < 2) {
+            // رمز استرداد كلمة المرور لكل مستخدم
+            if (!column_exists('users', 'recovery_hash')) { db_exec('ALTER TABLE users ADD COLUMN recovery_hash varchar(255) DEFAULT NULL'); }
+            if (!column_exists('users', 'recovery_set_at')) { db_exec('ALTER TABLE users ADD COLUMN recovery_set_at datetime DEFAULT NULL'); }
+            // الاسم الإنجليزي الجديد (لو لسه على القيمة القديمة الافتراضية)
+            db_exec("UPDATE settings SET svalue='Maher El Bahery Import & Export' WHERE skey='company_name_en' AND svalue IN ('Maher El-Beheiry Import & Export','')");
+        }
+        set_setting('schema_version', (string)SCHEMA_VERSION);
+    } catch (Throwable $e) {
+        error_log('[mb] migration failed: ' . $e->getMessage());
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  رمز استرداد كلمة المرور (للحالات اللي بتنسى فيها الباسوورد بدون إيميل)
+// ════════════════════════════════════════════════════════════════════════════
+function generate_recovery_code(): string
+{
+    $alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // من غير الحروف المتشابهة (O/0 و I/1)
+    $parts = [];
+    for ($g = 0; $g < 4; $g++) {
+        $p = '';
+        for ($i = 0; $i < 4; $i++) { $p .= $alphabet[random_int(0, strlen($alphabet) - 1)]; }
+        $parts[] = $p;
+    }
+    return implode('-', $parts);
+}
+function normalize_recovery_code(string $c): string { return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $c)); }
+/** يولّد رمز جديد للمستخدم ويرجّعه (النص الصريح بيظهر مرة واحدة فقط — المخزّن هاش) */
+function set_recovery_code(int $userId): string
+{
+    $code = generate_recovery_code();
+    db_exec('UPDATE users SET recovery_hash=?, recovery_set_at=? WHERE id=?', [password_hash(normalize_recovery_code($code), PASSWORD_DEFAULT), now(), $userId]);
+    return $code;
+}
+/** يعرض الرمز للمستخدم مرة واحدة في الصفحة الجاية */
+function show_recovery_once(string $code, string $forName): void
+{
+    $_SESSION['_recovery_notice'] = ['code' => $code, 'name' => $forName];
+}
+
+/** استرجاع كلمة المرور برمز الاسترداد. بيرجّع الرمز الجديد. بيستخدم نفس قفل المحاولات الخاطئة بتاع الدخول */
+function reset_password_with_code(string $username, string $code, string $newPass, string $newPass2): string
+{
+    $generic = 'اسم المستخدم أو رمز الاسترداد غير صحيح.';
+    $u = db_one('SELECT * FROM users WHERE username = ?', [$username]);
+    if ($u && $u['locked_until'] && strtotime($u['locked_until']) > time()) {
+        throw new AppError('تم إيقاف المحاولات مؤقتاً. حاول بعد ' . max(1, (int)ceil((strtotime($u['locked_until']) - time()) / 60)) . ' دقيقة.');
+    }
+    $ok = $u && $u['recovery_hash'] && password_verify(normalize_recovery_code($code), $u['recovery_hash']);
+    if (!$u || !$ok) {
+        if (!$u || !$u['recovery_hash']) { password_verify('x', '$2y$10$SRXbUvqzagQyHnSyrUda.eY6PqBpTkh8XMKUSCP5KZ66WXk2WAbka'); }
+        if ($u) {
+            $fails = (int)$u['failed_logins'] + 1;
+            db_exec('UPDATE users SET failed_logins=?, locked_until=? WHERE id=?', [$fails >= 5 ? 0 : $fails, $fails >= 5 ? date('Y-m-d H:i:s', time() + 600) : null, $u['id']]);
+        }
+        usleep(300000);
+        throw new AppError($generic);
+    }
+    if (!$u['is_active']) { throw new AppError('هذا الحساب موقوف. تواصل مع مدير النظام.'); }
+    if (mb_strlen($newPass) < 8) { throw new AppError('كلمة المرور الجديدة 8 أحرف على الأقل.'); }
+    if ($newPass !== $newPass2) { throw new AppError('تأكيد كلمة المرور غير مطابق.'); }
+    return db_tx(function () use ($u, $newPass) {
+        db_exec('UPDATE users SET password_hash=?, failed_logins=0, locked_until=NULL WHERE id=?', [password_hash($newPass, PASSWORD_DEFAULT), $u['id']]);
+        $new = set_recovery_code((int)$u['id']);
+        db_insert('audit_logs', ['user_id' => $u['id'], 'user_name' => $u['full_name'], 'action' => 'update', 'entity' => 'users', 'entity_id' => $u['id'],
+            'details' => 'استرجاع كلمة المرور برمز الاسترداد', 'ip_address' => $_SERVER['REMOTE_ADDR'] ?? null, 'created_at' => now()]);
+        return $new;
+    });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  عرض الرصيد بوضوح: «عليه كام» / «له كام»
+// ════════════════════════════════════════════════════════════════════════════
+/** [نص, كلاس لون] — للعميل: موجب = عليه (مستحق لنا) ؛ للمورد: موجب = له علينا */
+function balance_phrase(string $partyType, float $bal): array
+{
+    if (abs($bal) < 0.005) { return ['لا يوجد رصيد', 'zero']; }
+    if ($partyType === 'customer') { return $bal > 0 ? ['عليه ' . money($bal), 'owes'] : ['له رصيد ' . money(-$bal), 'credit']; }
+    return $bal > 0 ? ['له علينا ' . money($bal), 'owes'] : ['لنا عنده ' . money(-$bal), 'credit'];
+}
+
+/** أكتر الأصناف مبيعاً (بالكمية) في فترة */
+function top_selling_items(?string $from, ?string $to, int $limit = 5): array
+{
+    $where = "s.status='active'"; $params = [];
+    if ($from) { $where .= ' AND s.invoice_date >= ?'; $params[] = $from; }
+    if ($to)   { $where .= ' AND s.invoice_date <= ?'; $params[] = $to; }
+    return db_all("SELECT it.id, it.name, it.unit, SUM(si.qty) AS qty_sold, SUM(si.line_total) AS revenue, COUNT(DISTINCT s.id) AS invoices
+                   FROM sale_items si JOIN sales s ON s.id = si.sale_id JOIN items it ON it.id = si.item_id
+                   WHERE $where GROUP BY it.id, it.name, it.unit ORDER BY qty_sold DESC, revenue DESC LIMIT " . (int)$limit, $params);
 }

@@ -7,7 +7,8 @@ declare(strict_types=1);
 
 const APP_NAME    = 'ماهر البحيري للاستيراد والتصدير';
 const APP_SHORT   = 'ماهر البحيري';
-const APP_NAME_EN = 'Maher El-Beheiry Import & Export';
+const APP_NAME_EN = 'Maher El Bahery Import & Export';
+const SCHEMA_VERSION = 2;   // رقم نسخة هيكل قاعدة البيانات (بيترقّى تلقائياً — راجع run_migrations)
 const CURRENCY    = 'جنيه';
 
 date_default_timezone_set('Africa/Cairo');
@@ -38,14 +39,17 @@ const MODULES = [
     'vouchers'  => 'سندات القبض والصرف',
     'treasury'  => 'الخزينة والمصروفات',
     'reports'   => 'التقارير',
+    'settings'  => 'الإعدادات',
     'audit'     => 'سجل العمليات',
 ];
-const ADMIN_ONLY_MODULES = ['users', 'settings'];
+const ADMIN_ONLY_MODULES = ['users'];   // إدارة المستخدمين للمدير فقط (عشان محدش يرقّي نفسه لمدير)
 
 const ROLES = [
     'admin'      => ['label' => 'مدير النظام',   'modules' => ['*']],
-    'accountant' => ['label' => 'محاسب',          'modules' => ['dashboard', 'items', 'stock', 'purchases', 'sales', 'suppliers', 'customers', 'vouchers', 'treasury', 'reports', 'audit']],
-    'warehouse'  => ['label' => 'أمين مخزن',      'modules' => ['dashboard', 'items', 'stock']],
+    // المحاسب يشوف كل حاجة في النظام ما عدا إدارة المستخدمين
+    'accountant' => ['label' => 'محاسب',          'modules' => ['dashboard', 'items', 'stock', 'purchases', 'sales', 'suppliers', 'customers', 'vouchers', 'treasury', 'reports', 'settings', 'audit']],
+    // أمين المخزن: المخزن بس (الأصناف، الأرصدة، حركة المخزون، إذن استلام/صرف/تحويل) — بدون أي أرقام مالية
+    'warehouse'  => ['label' => 'أمين مخزن',      'modules' => ['items', 'stock']],
     'sales'      => ['label' => 'مبيعات',         'modules' => ['dashboard', 'items', 'sales', 'customers', 'vouchers']],
     'purchases'  => ['label' => 'مشتريات',        'modules' => ['dashboard', 'items', 'purchases', 'suppliers', 'vouchers']],
     'viewer'     => ['label' => 'مطّلع (تقارير)', 'modules' => ['dashboard', 'reports']],
@@ -345,7 +349,7 @@ function load_user_session(array $u): void
     $mods = $u['permissions'] ? (json_decode($u['permissions'], true) ?: []) : role_modules($u['role']);
     $_SESSION['user'] = [
         'id' => (int)$u['id'], 'username' => $u['username'], 'full_name' => $u['full_name'],
-        'role' => $u['role'], 'modules' => $mods,
+        'role' => $u['role'], 'modules' => $mods, 'has_recovery' => !empty($u['recovery_hash']),
     ];
 }
 
@@ -399,3 +403,4 @@ function csv_download(string $filename, array $headers, array $rows): never
 }
 
 require_once __DIR__ . '/services.php';
+if (!IN_INSTALLER && $pdo) { run_migrations(); }

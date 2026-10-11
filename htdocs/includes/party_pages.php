@@ -17,8 +17,8 @@ function party_list_page(string $type): void
     $totalOver = array_sum(array_column($rows, 'overdue'));
 
     if (isset($_GET['export'])) {
-        csv_download('كشف-' . $c['plural'], ['الاسم', 'المسؤول', 'الهاتف', 'الرصيد', 'المتأخر', 'آخر حركة', 'حالة الحساب'],
-            array_map(fn($r) => [$r['name'], $r['contact_person'], $r['phone'], $r['balance'], $r['overdue'], $r['last_date'], PARTY_STATUS_LABELS[$r['status_key']]], $rows));
+        csv_download('كشف-' . $c['plural'], ['الاسم', 'المسؤول', 'الهاتف', 'إجمالي الفواتير', $type === 'customer' ? 'إجمالي المحصَّل' : 'إجمالي المسدَّد', $type === 'customer' ? 'المتبقي عليه' : 'المتبقي له علينا', 'أقرب استحقاق', 'المتأخر', 'آخر حركة', 'حالة الحساب'],
+            array_map(fn($r) => [$r['name'], $r['contact_person'], $r['phone'], $r['total_invoiced'], $r['total_paid'], $r['balance'], $r['next_due'], $r['overdue'], $r['last_date'], PARTY_STATUS_LABELS[$r['status_key']]], $rows));
     }
     page_start($c['plural'], $c['module']);
     $isCust = $type === 'customer';
@@ -39,27 +39,31 @@ function party_list_page(string $type): void
     </div>
     <div class="cardx">
       <div class="head"><i class="bi bi-people"></i> <?= e($c['plural']) ?> <span class="text-muted small fw-normal">(<?= count($rows) ?>)</span>
-        <span class="ms-auto small fw-normal text-muted">الرصيد الموجب = <?= $isCust ? 'مستحق لنا على العميل' : 'مستحق للمورد علينا' ?></span></div>
+        <span class="ms-auto d-flex gap-2 flex-wrap align-items-center">
+          <span class="badge-soft danger"><?= $isCust ? 'إجمالي ما عليهم' : 'إجمالي ما لهم علينا' ?>: <b class="num"><?= money(array_sum(array_map(fn($r) => max(0, (float)$r['balance']), $rows))) ?></b></span>
+        </span></div>
       <div class="table-responsive">
         <table class="table table-hover align-middle">
-          <thead><tr><th>الاسم</th><th>المسؤول / الهاتف</th><th class="num">الرصيد (<?= CURRENCY ?>)</th><th class="num">المتأخر</th><th>آخر حركة</th><th>حالة الحساب</th><th class="no-print"></th></tr></thead>
+          <thead><tr><th>الاسم</th><th class="num">إجمالي الفواتير</th><th class="num"><?= $isCust ? 'إجمالي المحصَّل' : 'إجمالي المسدَّد' ?></th><th><?= $isCust ? 'المتبقي عليه' : 'المتبقي له علينا' ?></th><th>أقرب استحقاق</th><th class="num">المتأخر</th><th>الحالة</th><th class="no-print"></th></tr></thead>
           <tbody>
-          <?php foreach ($rows as $r): ?>
+          <?php foreach ($rows as $r): [$balTxt, $balCls] = balance_phrase($type, (float)$r['balance']); ?>
             <tr class="<?= $r['is_active'] ? '' : 'text-muted' ?>">
-              <td><a class="fw-bold text-decoration-none" href="statement.php?id=<?= (int)$r['id'] ?>"><?= e($r['name']) ?></a><?= $r['is_active'] ? '' : ' ' . badge('موقوف') ?></td>
-              <td><?= e($r['contact_person'] ?? '') ?><div class="small text-muted" dir="ltr"><?= e($r['phone'] ?? '') ?></div></td>
-              <td class="num <?= (float)$r['balance'] > 0.005 ? 'amount-neg' : ((float)$r['balance'] < -0.005 ? 'amount-pos' : '') ?>"><?= money($r['balance']) ?></td>
+              <td><a class="fw-bold text-decoration-none" href="statement.php?id=<?= (int)$r['id'] ?>"><?= e($r['name']) ?></a><?= $r['is_active'] ? '' : ' ' . badge('موقوف') ?>
+                  <div class="small text-muted"><?= e($r['contact_person'] ?? '') ?><?= $r['phone'] ? ' · <span dir="ltr">' . e($r['phone']) . '</span>' : '' ?></div></td>
+              <td class="num"><?= money($r['total_invoiced']) ?></td>
+              <td class="num"><?= money($r['total_paid']) ?></td>
+              <td><span class="bal <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'عليه' : 'له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد' : 'لنا عنده') : 'الرصيد') ?></small><b><?= $balCls === 'zero' ? '0.00' : money(abs((float)$r['balance'])) ?></b></span></td>
+              <td><?php if ($r['next_due']): $late = $r['next_due'] < today(); ?><span class="<?= $late ? 'amount-neg' : '' ?>"><?= fdate($r['next_due']) ?></span><div class="small text-muted num">متبقي فواتير <?= money($r['open_amt']) ?></div><?php else: ?>—<?php endif; ?></td>
               <td class="num"><?= (float)$r['overdue'] > 0.005 ? '<span class="amount-neg">' . money($r['overdue']) . '</span>' : '—' ?></td>
-              <td><?= fdate($r['last_date']) ?></td>
               <td><?= badge(PARTY_STATUS_LABELS[$r['status_key']], PARTY_STATUS_CLASS[$r['status_key']]) ?></td>
               <td class="no-print text-nowrap">
                 <a class="btn btn-sm btn-outline-brand" href="statement.php?id=<?= (int)$r['id'] ?>"><i class="bi bi-journal-text"></i> كشف حساب</a>
-                <a class="btn btn-sm btn-outline-secondary" href="form.php?id=<?= (int)$r['id'] ?>"><i class="bi bi-pencil"></i></a>
+                <a class="btn btn-sm btn-outline-secondary" href="form.php?id=<?= (int)$r['id'] ?>" title="تعديل"><i class="bi bi-pencil"></i></a>
               </td>
             </tr>
-          <?php endforeach; if (!$rows): ?><tr><td colspan="7" class="text-center text-muted py-4">لا توجد حسابات</td></tr><?php endif; ?>
+          <?php endforeach; if (!$rows): ?><tr><td colspan="8" class="text-center text-muted">لا توجد حسابات</td></tr><?php endif; ?>
           </tbody>
-          <?php if ($rows): ?><tfoot><tr><td colspan="2">الإجمالي</td><td class="num"><?= money($totalBal) ?></td><td class="num"><?= money($totalOver) ?></td><td colspan="3"></td></tr></tfoot><?php endif; ?>
+          <?php if ($rows): ?><tfoot><tr><td>الإجمالي</td><td class="num"><?= money(array_sum(array_column($rows, 'total_invoiced'))) ?></td><td class="num"><?= money(array_sum(array_column($rows, 'total_paid'))) ?></td><td class="num"><?= money($totalBal) ?></td><td></td><td class="num"><?= money($totalOver) ?></td><td colspan="2"></td></tr></tfoot><?php endif; ?>
         </table>
       </div>
     </div>
@@ -149,11 +153,27 @@ function party_statement_page(string $type): void
     page_start('كشف حساب: ' . $p['name'], $c['module']);
     print_header('كشف حساب ' . $c['label'] . ': ' . $p['name'] . ($from || $to ? ' — الفترة: ' . ($from ? fdate($from) : '…') . ' إلى ' . ($to ? fdate($to) : '…') : ''));
     ?>
+    <?php [$balTxt, $balCls] = balance_phrase($type, (float)$sum['balance']); ?>
+    <div class="cardx mb-3"><div class="body">
+      <div class="party-head">
+        <div class="avatar lg"><?= e(mb_substr($p['name'], 0, 1)) ?></div>
+        <div class="info">
+          <h2><?= e($p['name']) ?> <?= badge(PARTY_STATUS_LABELS[$sum['status_key']], PARTY_STATUS_CLASS[$sum['status_key']]) ?></h2>
+          <div class="meta">
+            <?php if ($p['contact_person']): ?><span><i class="bi bi-person"></i><?= e($p['contact_person']) ?></span><?php endif; ?>
+            <?php if ($p['phone']): ?><span dir="ltr"><i class="bi bi-telephone"></i><?= e($p['phone']) ?></span><?php endif; ?>
+            <?php if ($p['address']): ?><span><i class="bi bi-geo-alt"></i><?= e($p['address']) ?></span><?php endif; ?>
+            <span><i class="bi bi-hourglass-split"></i>مدة <?= $isCust ? 'التحصيل' : 'السداد' ?> <?= (int)$p['credit_days'] ?> يوم</span>
+          </div>
+        </div>
+        <div class="bal bal-hero <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'المتبقي عليه' : 'المتبقي له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد دائن' : 'لنا عنده') : 'الرصيد') ?> (<?= CURRENCY ?>)</small><b><?= $balCls === 'zero' ? '0.00' : money(abs((float)$sum['balance'])) ?></b></div>
+      </div>
+    </div></div>
     <div class="row g-3 mb-3">
-      <div class="col-md-3 col-6"><div class="kpi <?= (float)$sum['balance'] > 0.005 ? 'red' : 'green' ?>"><div class="label">الرصيد الحالي</div><div class="value num"><?= money($sum['balance']) ?></div><div class="sub"><?= $isCust ? 'مستحق لنا' : 'مستحق للمورد' ?> (<?= CURRENCY ?>)</div><i class="bi bi-wallet2 bg"></i></div></div>
-      <div class="col-md-3 col-6"><div class="kpi gold"><div class="label">المتأخر عن الاستحقاق</div><div class="value num"><?= money($sum['overdue']) ?></div><div class="sub"><?= $sum['max_days'] ? 'أقدم تأخير ' . (int)$sum['max_days'] . ' يوم' : 'لا يوجد تأخير' ?></div><i class="bi bi-hourglass-split bg"></i></div></div>
-      <div class="col-md-3 col-6"><div class="kpi"><div class="label">حالة الحساب</div><div class="value fs-4"><?= badge(PARTY_STATUS_LABELS[$sum['status_key']], PARTY_STATUS_CLASS[$sum['status_key']]) ?></div><div class="sub">مدة <?= $isCust ? 'التحصيل' : 'السداد' ?> <?= (int)$p['credit_days'] ?> يوم</div></div></div>
-      <div class="col-md-3 col-6"><div class="kpi"><div class="label">بيانات التواصل</div><div class="small"><?= e($p['contact_person'] ?? '') ?><br><span dir="ltr"><?= e($p['phone'] ?? '') ?></span><br><?= e($p['address'] ?? '') ?></div></div></div>
+      <div class="col-md-3 col-6"><div class="kpi"><div class="label">إجمالي الفواتير</div><div class="value num"><?= money($sum['total_invoiced']) ?></div><div class="sub">+ رصيد افتتاحي <?= money($sum['opening_bal']) ?></div><i class="bi bi-receipt bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi green"><div class="label"><?= $isCust ? 'إجمالي ما دفعه' : 'إجمالي ما سُدِّد له' ?></div><div class="value num"><?= money($sum['total_paid']) ?></div><div class="sub"><?= $isCust ? 'تحصيلات وخصومات' : 'مدفوعات وخصومات' ?></div><i class="bi bi-cash-coin bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi gold"><div class="label">أقرب موعد استحقاق</div><div class="value fs-4"><?= $sum['next_due'] ? fdate($sum['next_due']) : '—' ?></div><div class="sub"><?= $sum['next_due'] ? 'متبقي فواتير ' . money($sum['open_amt']) : 'لا توجد فواتير مفتوحة' ?></div><i class="bi bi-calendar-event bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi red"><div class="label">المتأخر عن الاستحقاق</div><div class="value num"><?= money($sum['overdue']) ?></div><div class="sub"><?= $sum['max_days'] ? 'أقدم تأخير ' . (int)$sum['max_days'] . ' يوم' : 'لا يوجد تأخير' ?></div><i class="bi bi-exclamation-octagon bg"></i></div></div>
     </div>
 
     <div class="filters no-print">

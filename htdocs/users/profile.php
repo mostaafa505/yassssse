@@ -7,6 +7,14 @@ $me = db_one('SELECT * FROM users WHERE id=?', [current_user()['id']]);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_guard();
     try {
+        if (($_POST['action'] ?? '') === 'recovery') {
+            if (!password_verify((string)($_POST['rc_password'] ?? ''), $me['password_hash'])) { throw new AppError('كلمة المرور غير صحيحة.'); }
+            $code = set_recovery_code((int)$me['id']);
+            $_SESSION['user']['has_recovery'] = true;
+            show_recovery_once($code, $me['full_name']);
+            audit('update', 'users', (int)$me['id'], 'إنشاء رمز استرداد جديد');
+            redirect('users/profile.php');
+        }
         $name = post_str('full_name', 120); $cur = (string)($_POST['current_password'] ?? ''); $new = (string)($_POST['new_password'] ?? '');
         if ($name === '') { throw new AppError('الاسم مطلوب.'); }
         $data = ['full_name' => $name];
@@ -34,5 +42,12 @@ page_start('حسابي', '');
   <div class="col-md-6"><label class="form-label">الجديدة (8+)</label><input class="form-control" type="password" name="new_password" dir="ltr" minlength="8" autocomplete="new-password"></div>
   <div class="col-md-6"><label class="form-label">تأكيد الجديدة</label><input class="form-control" type="password" name="new_password2" dir="ltr" autocomplete="new-password"></div>
   <div class="col-12"><button class="btn btn-brand px-4">حفظ</button></div>
+</form></div>
+<div class="cardx mt-3" style="max-width:560px"><div class="head"><i class="bi bi-life-preserver"></i> رمز استرداد كلمة المرور</div>
+<form method="post" class="body row g-3" autocomplete="off"><?= csrf_field() ?><input type="hidden" name="action" value="recovery">
+  <div class="col-12 small text-muted">رمز من 16 حرف تستخدمه من صفحة «نسيت كلمة المرور» لو نسيت الباسوورد. بيظهر مرة واحدة بس — احتفظ به في مكان آمن. إنشاء رمز جديد بيلغي القديم.
+    <?= !empty($me['recovery_hash']) ? '<br>آخر إنشاء: ' . e((string)$me['recovery_set_at']) : '<br><b class="text-danger">لسه ماعملتش رمز استرداد.</b>' ?></div>
+  <div class="col-md-8"><label class="form-label">كلمة المرور الحالية (للتأكيد)</label><input class="form-control" type="password" name="rc_password" dir="ltr" required autocomplete="current-password"></div>
+  <div class="col-md-4 d-flex align-items-end"><button class="btn btn-gold w-100">إنشاء رمز جديد</button></div>
 </form></div>
 <?php page_end();

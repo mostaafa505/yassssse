@@ -81,11 +81,11 @@ print_header('حركة الخزينة من ' . fdate($from) . ' إلى ' . fdate
       <a class="btn btn-outline-secondary" href="accounts.php"><i class="bi bi-gear"></i> الحسابات</a></span></div>
 </form></div>
 <div class="cardx"><div class="head"><i class="bi bi-safe2"></i> حركة الخزينة <span class="text-muted small fw-normal">(<?= $total ?>)</span></div>
-<div class="table-responsive"><table class="table table-hover align-middle">
+<div class="table-responsive"><table class="table table-hover align-middle wide">
   <thead><tr><th>التاريخ</th><th>رقم المستند</th><th>البيان</th><th>التصنيف</th><th class="num">مقبوضات</th><th class="num">مدفوعات</th><th class="num">رصيد أول الحركة</th><th class="num">رصيد آخر الحركة</th><th>الحساب / الطريقة</th><th>المسؤول</th><th class="no-print"></th></tr></thead>
   <tbody>
   <?php foreach ($pageRows as $r): ?>
-    <tr><td><?= fdate($r['txn_date']) ?></td><td class="doc-no"><?= $linkFor($r) ?></td><td><?= e($r['description']) ?><?= $r['notes'] ? '<div class="small text-muted">' . e($r['notes']) . '</div>' : '' ?></td>
+    <tr><td><?= fdate($r['txn_date']) ?></td><td class="doc-no"><?= $linkFor($r) ?></td><td class="desc"><?= e($r['description']) ?><?= $r['notes'] ? '<div class="small text-muted">' . e($r['notes']) . '</div>' : '' ?></td>
       <td><?= badge($r['category'], (float)$r['receipt_amount'] > 0 ? 'success' : 'warning') ?></td>
       <td class="num amount-pos"><?= (float)$r['receipt_amount'] ? money($r['receipt_amount']) : '' ?></td><td class="num amount-neg"><?= (float)$r['payment_amount'] ? money($r['payment_amount']) : '' ?></td>
       <td class="num text-muted"><?= money($r['start_bal']) ?></td><td class="num fw-bold <?= $r['end_bal'] < 0 ? 'amount-neg' : '' ?>"><?= money($r['end_bal']) ?></td>

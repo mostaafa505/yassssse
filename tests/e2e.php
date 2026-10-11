@@ -93,22 +93,62 @@ ok($r['code'] === 200 && str_contains($r['body'], 'E2E-RENT'), 'ظهور الم�
 echo "▶ المستخدمين والصلاحيات\n";
 $r = $c->post('users/form.php', ['full_name' => 'أمين مخزن', 'username' => 'wh1', 'password' => 'Wh@12345678', 'role' => 'warehouse', 'is_active' => '1']);
 ok($val("SELECT role FROM users WHERE username='wh1'") === 'warehouse', 'إنشاء مستخدم أمين مخزن: ' . flashText($r['body']));
+ok(preg_match('/recovery-code[^>]*>([A-Z2-9]{4}(-[A-Z2-9]{4}){3})</u', $r['body'], $m0) === 1, 'ظهور رمز الاسترداد مرة واحدة بعد إنشاء المستخدم');
+$whCode = $m0[1] ?? '';
+$r = $c->req('users/'); ok(!str_contains($r['body'], $whCode ?: 'zzzz'), 'الرمز لا يظهر تاني في الصفحة التالية');
 $r = $c->post('users/form.php', ['full_name' => 'x', 'username' => 'bad name', 'password' => 'Wh@12345678', 'role' => 'warehouse', 'is_active' => '1']);
 ok(str_contains(flashText($r['body']), 'حروف إنجليزية'), 'رفض اسم مستخدم غير صالح');
+$c->post('users/form.php', ['full_name' => 'المحاسب', 'username' => 'acc1', 'password' => 'Acc@12345678', 'role' => 'accountant', 'is_active' => '1']);
+
 $w = new Client();
-$w->post('auth/login.php', ['username' => 'wh1', 'password' => 'Wh@12345678']);
-$r = $w->req('dashboard/');
-ok($r['code'] === 200 && !str_contains($r['body'], 'رصيد الخزينة والبنك'), 'أمين المخزن لا يرى الأرقام المالية في الداشبورد');
-ok($w->req('treasury/')['code'] === 403, 'أمين المخزن ممنوع من الخزينة (403)');
-ok($w->req('purchases/')['code'] === 403, 'أمين المخزن ممنوع من المشتريات (403)');
-ok($w->req('users/')['code'] === 403, 'أمين المخزن ممنوع من المستخدمين (403)');
-ok($w->req('stock/')['code'] === 200, 'أمين المخزن يدخل المخازن');
-$r = $w->req('reports/'); ok($r['code'] === 403, 'ممنوع من التقارير');
-$w2 = new Client();
-for ($i = 0; $i < 5; $i++) { $w2->post('auth/login.php', ['username' => 'wh1', 'password' => 'bad' . $i]); }
-$r = $w2->post('auth/login.php', ['username' => 'wh1', 'password' => 'Wh@12345678']);
-ok(str_contains($r['body'], 'مقفل مؤقتاً'), 'قفل الحساب بعد 5 محاولات فاشلة');
+$r = $w->post('auth/login.php', ['username' => 'wh1', 'password' => 'Wh@12345678']);
+ok(str_contains($w->lastUrl, 'stock/'), 'أمين المخزن يتحول لصفحة المخازن بعد الدخول: ' . $w->lastUrl);
+ok($w->req('dashboard/')['code'] === 403, 'أمين المخزن ممنوع من الرئيسية (فيها أرقام مالية)');
+foreach (['treasury/', 'purchases/', 'sales/', 'customers/', 'suppliers/', 'vouchers/', 'reports/', 'users/', 'settings/', 'audit/'] as $path) {
+    ok($w->req($path)['code'] === 403, "أمين المخزن ممنوع من $path");
+}
+foreach (['stock/', 'stock/movements.php', 'items/', 'warehouses/', 'stock/operation.php'] as $path) { ok($w->req($path)['code'] === 200, "أمين المخزن يدخل $path"); }
+$r = $w->req('stock/');
+ok(!str_contains($r['body'], 'الخزينة والمصروفات') && !str_contains($r['body'], 'المشتريات</a>'), 'قائمة أمين المخزن لا فيها أقسام مالية');
+
+$a = new Client();
+$a->post('auth/login.php', ['username' => 'acc1', 'password' => 'Acc@12345678']);
+foreach (['dashboard/', 'treasury/', 'purchases/', 'sales/', 'customers/', 'suppliers/', 'vouchers/', 'reports/', 'settings/', 'audit/', 'stock/', 'items/'] as $path) {
+    ok($a->req($path)['code'] === 200, "المحاسب يدخل $path");
+}
+ok($a->req('users/')['code'] === 403, 'المحاسب ممنوع من إدارة المستخدمين فقط');
+
+echo "▶ نسيت كلمة المرور (رمز الاسترداد)\n";
+$f = new Client();
+$r = $f->req('auth/login.php'); ok(str_contains($r['body'], 'نسيت كلمة المرور'), 'رابط «نسيت كلمة المرور» تحت زرار الدخول');
+$r = $f->post('auth/forgot.php', ['username' => 'wh1', 'code' => 'AAAA-AAAA-AAAA-AAAA', 'new_password' => 'New@12345678', 'new_password2' => 'New@12345678']);
+ok(str_contains($r['body'], 'غير صحيح'), 'رمز استرداد خاطئ يترفض');
+$r = $f->post('auth/forgot.php', ['username' => 'wh1', 'code' => strtolower($whCode), 'new_password' => 'short', 'new_password2' => 'short']);
+ok(str_contains($r['body'], '8 أحرف'), 'باسوورد جديد قصير يترفض');
+$r = $f->post('auth/forgot.php', ['username' => 'wh1', 'code' => strtolower($whCode), 'new_password' => 'New@12345678', 'new_password2' => 'New@12345678']);
+ok(str_contains($r['body'], 'تم تغيير كلمة المرور') && preg_match('/recovery-code"[^>]*>([A-Z2-9-]{19})</u', $r['body'], $m1) === 1, 'استرجاع الباسوورد بالرمز ناجح ويطلع رمز جديد');
+$w3 = new Client(); $w3->post('auth/login.php', ['username' => 'wh1', 'password' => 'New@12345678']);
+ok(str_contains($w3->lastUrl, 'stock/'), 'الدخول بالباسوورد الجديد');
+$w4 = new Client(); $r = $w4->post('auth/login.php', ['username' => 'wh1', 'password' => 'Wh@12345678']);
+ok(str_contains($r['body'], 'غير صحيحة'), 'الباسوورد القديم ما بقاش شغال');
+$r = $f->post('auth/forgot.php', ['username' => 'wh1', 'code' => strtolower($whCode), 'new_password' => 'Other@12345678', 'new_password2' => 'Other@12345678']);
+ok(str_contains($r['body'], 'غير صحيح'), 'الرمز القديم بطل صالح بعد الاستخدام');
 $pdo->exec("UPDATE users SET locked_until=NULL, failed_logins=0 WHERE username='wh1'");
+for ($i = 0; $i < 5; $i++) { $f->post('auth/forgot.php', ['username' => 'wh1', 'code' => 'BAD' . $i, 'new_password' => 'New@12345678', 'new_password2' => 'New@12345678']); }
+$r = $f->post('auth/forgot.php', ['username' => 'wh1', 'code' => $m1[1] ?? 'x', 'new_password' => 'New@12345678', 'new_password2' => 'New@12345678']);
+ok(str_contains($r['body'], 'تم إيقاف المحاولات'), 'قفل مؤقت بعد 5 محاولات رمز خاطئة');
+$pdo->exec("UPDATE users SET locked_until=NULL, failed_logins=0 WHERE username='wh1'");
+
+echo "▶ الرئيسية: أكتر منتج بيتباع + عليه كام\n";
+$r = $c->req('dashboard/?p=all');
+ok(str_contains($r['body'], 'أكتر منتج بيتباع'), 'كارت أكتر منتج بيتباع ظاهر');
+$topName = $val("SELECT it.name FROM sale_items si JOIN sales s ON s.id=si.sale_id AND s.status='active' JOIN items it ON it.id=si.item_id GROUP BY it.id, it.name ORDER BY SUM(si.qty) DESC LIMIT 1");
+ok($topName && str_contains($r['body'], $topName), 'اسم الأكثر مبيعاً ظاهر: ' . $topName);
+$r = $c->req('customers/');
+ok(str_contains($r['body'], 'المتبقي عليه') && str_contains($r['body'], 'class="bal '), 'قائمة العملاء فيها «المتبقي عليه»');
+$r = $c->req("customers/statement.php?id=$cusId");
+ok(str_contains($r['body'], 'bal-hero') && str_contains($r['body'], 'إجمالي الفواتير'), 'كشف حساب العميل فيه الرصيد الكبير وإجمالي الفواتير');
+$r = $c->req('suppliers/'); ok(str_contains($r['body'], 'المتبقي له علينا'), 'قائمة الموردين فيها «المتبقي له علينا»');
 
 echo "▶ الإعدادات وصفحة التثبيت\n";
 $r = $c->post('settings/', ['company_name' => 'ماهر البحيري للاستيراد والتصدير', 'company_name_en' => 'MB', 'vat_rate' => '14', 'invoice_footer' => 'شكراً']);
