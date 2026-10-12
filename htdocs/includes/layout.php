@@ -57,7 +57,8 @@ function page_start(string $title, string $module, array $opts = []): void
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?> | <?= e($company) ?></title>
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
-<meta name="theme-color" content="#d3e8f9">
+<meta name="theme-color" content="#1a68a8">
+<?php pwa_head(); ?>
 <link rel="icon" type="image/svg+xml" href="<?= e(url('assets/favicon.svg')) ?>">
 <link rel="apple-touch-icon" href="<?= e(url('assets/img/apple-touch-icon.png')) ?>">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2')) ?>">
@@ -87,7 +88,7 @@ function page_start(string $title, string $module, array $opts = []): void
     <div class="user-box">
         <div class="avatar"><?= e($initial) ?></div>
         <div class="who"><b><?= e($u['full_name']) ?></b><span><?= e(ROLES[$u['role']]['label'] ?? '') ?></span></div>
-        <div class="acts"><a href="<?= e(url('users/profile.php')) ?>" title="حسابي"><i class="bi bi-person-gear"></i></a><a href="<?= e(url('auth/logout.php')) ?>" title="تسجيل الخروج"><i class="bi bi-box-arrow-left"></i></a></div>
+        <div class="acts"><a href="#" data-install class="d-none install-btn" title="تثبيت التطبيق"><i class="bi bi-download"></i></a><a href="<?= e(url('users/profile.php')) ?>" title="حسابي"><i class="bi bi-person-gear"></i></a><a href="<?= e(url('auth/logout.php')) ?>" title="تسجيل الخروج"><i class="bi bi-box-arrow-left"></i></a></div>
     </div>
 </aside>
 <div class="main">
@@ -132,6 +133,7 @@ function page_end(array $opts = []): void
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php foreach ((array)($opts['scripts'] ?? []) as $sc): ?><script src="<?= e($sc) ?>"></script><?php endforeach; ?>
+<?php pwa_footer(); ?>
 <script src="<?= e(url('assets/js/app.js')) ?>?v=<?= (int)@filemtime(dirname(__DIR__) . '/assets/js/app.js') ?>"></script>
 <?= $opts['inline_js'] ?? '' ?>
 </body>

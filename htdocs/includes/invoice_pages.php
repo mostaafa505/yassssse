@@ -92,14 +92,14 @@ function invoice_list_page(string $kind): void
             <td class="doc-no"><a class="fw-bold" href="view.php?id=<?= (int)$r['id'] ?>"><?= e($r['doc_no']) ?></a></td>
             <td><?= e($r['party_name']) ?></td>
             <td class="small text-muted" style="max-width:260px"><?= e(mb_strimwidth((string)$r['item_names'], 0, 70, '…')) ?></td>
-            <td class="num <?= $cancelled ? 'text-decoration-line-through' : '' ?>"><?= money($r['total']) ?></td>
-            <td class="num"><?= money($r['paid_amount']) ?></td>
-            <td class="num fw-bold"><?= $cancelled ? '—' : money((float)$r['total'] - (float)$r['paid_amount']) ?></td>
+            <td class="num <?= $cancelled ? 'text-decoration-line-through' : '' ?>"><?= egp($r['total']) ?></td>
+            <td class="num"><?= egp($r['paid_amount']) ?></td>
+            <td class="num fw-bold"><?= $cancelled ? '—' : egp((float)$r['total'] - (float)$r['paid_amount']) ?></td>
             <td><?= invoice_status_badge($r) ?></td>
           </tr>
         <?php endforeach; if (!$rows): ?><tr><td colspan="8" class="text-center text-muted py-4">لا توجد فواتير</td></tr><?php endif; ?>
         </tbody>
-        <?php if ($rows): ?><tfoot><tr><td colspan="4">إجمالي الفواتير الفعّالة (كل النتائج)</td><td class="num"><?= money($agg['t']) ?></td><td class="num"><?= money($agg['p']) ?></td><td class="num"><?= money((float)$agg['t'] - (float)$agg['p']) ?></td><td></td></tr></tfoot><?php endif; ?>
+        <?php if ($rows): ?><tfoot><tr><td colspan="4">إجمالي الفواتير الفعّالة (كل النتائج)</td><td class="num"><?= egp($agg['t']) ?></td><td class="num"><?= egp($agg['p']) ?></td><td class="num"><?= egp((float)$agg['t'] - (float)$agg['p']) ?></td><td></td></tr></tfoot><?php endif; ?>
       </table></div>
     </div>
     <?= pager($total, $perPage, $page) ?>
@@ -215,9 +215,9 @@ function invoice_form_page(string $kind): void
       </div></div></div></div>
 
       <div class="col-lg-5"><div class="totals-box">
-        <div class="row-t"><span>إجمالي الأصناف</span><b class="num" id="tSub">0.00</b></div>
-        <div class="row-t grand"><span>إجمالي الفاتورة</span><b class="num" id="tTotal">0.00</b></div>
-        <div class="row-t mt-2"><span>المتبقي (آجل)</span><b class="num text-danger" id="tRemain">0.00</b></div>
+        <div class="row-t"><span>إجمالي الأصناف</span><b><span class="num" id="tSub">0.00</span><span class="cur"><?= CURRENCY ?></span></b></div>
+        <div class="row-t grand"><span>إجمالي الفاتورة</span><b><span class="num" id="tTotal">0.00</span><span class="cur"><?= CURRENCY ?></span></b></div>
+        <div class="row-t mt-2"><span>المتبقي (آجل)</span><b><span class="num" id="tRemain">0.00</span><span class="cur"><?= CURRENCY ?></span></b></div>
         <div class="small text-muted mt-2">الإجمالي = الكمية × السعر − الخصم + النقل + الضريبة + الرسوم الأخرى.</div>
         <button class="btn btn-brand w-100 mt-3 py-2"><i class="bi bi-check2-circle"></i> حفظ وترحيل الفاتورة</button>
         <a class="btn btn-light w-100 mt-2" href="./">إلغاء</a>
@@ -288,25 +288,25 @@ function invoice_view_page(string $kind): void
       <div class="col-lg-8"><div class="cardx">
         <div class="table-responsive"><table class="table align-middle">
           <thead><tr><th>#</th><th>الصنف</th><th class="num">الكمية</th><th>الوحدة</th><th class="num">سعر الوحدة</th><th class="num">الإجمالي</th></tr></thead>
-          <tbody><?php foreach ($lines as $n => $l): ?><tr><td><?= $n + 1 ?></td><td><?= e($l['name']) ?> <span class="text-muted small">(<?= e($l['code']) ?>)</span></td><td class="num"><?= qty($l['qty']) ?></td><td><?= e($l['unit']) ?></td><td class="num"><?= money($l['unit_price']) ?></td><td class="num"><?= money($l['line_total']) ?></td></tr><?php endforeach; ?></tbody>
+          <tbody><?php foreach ($lines as $n => $l): ?><tr><td><?= $n + 1 ?></td><td><?= e($l['name']) ?> <span class="text-muted small">(<?= e($l['code']) ?>)</span></td><td class="num"><?= qty($l['qty']) ?></td><td><?= e($l['unit']) ?></td><td class="num"><?= egp($l['unit_price']) ?></td><td class="num"><?= egp($l['line_total']) ?></td></tr><?php endforeach; ?></tbody>
         </table></div>
       </div>
       <?php if (setting('invoice_footer') && !$isPurchase): ?><p class="text-center text-muted mt-3 print-only"><?= e(setting('invoice_footer')) ?></p><?php endif; ?>
       </div>
       <div class="col-lg-4">
         <div class="totals-box">
-          <div class="row-t"><span>إجمالي الأصناف</span><b class="num"><?= money($inv['subtotal']) ?></b></div>
-          <?php if ((float)$inv['discount']): ?><div class="row-t"><span>الخصم</span><b class="num">− <?= money($inv['discount']) ?></b></div><?php endif; ?>
-          <?php if ((float)$inv['transport']): ?><div class="row-t"><span>مصاريف النقل</span><b class="num">+ <?= money($inv['transport']) ?></b></div><?php endif; ?>
-          <?php if ((float)$inv['vat']): ?><div class="row-t"><span>ضريبة القيمة المضافة</span><b class="num">+ <?= money($inv['vat']) ?></b></div><?php endif; ?>
-          <?php if ((float)$inv['other_fees']): ?><div class="row-t"><span>رسوم أخرى</span><b class="num">+ <?= money($inv['other_fees']) ?></b></div><?php endif; ?>
-          <div class="row-t grand"><span>إجمالي الفاتورة</span><b class="num"><?= money($inv['total']) ?> <?= CURRENCY ?></b></div>
-          <div class="row-t mt-2"><span>المسدد</span><b class="num amount-pos"><?= money($inv['paid_amount']) ?></b></div>
-          <div class="row-t"><span>المتبقي</span><b class="num <?= $remaining > 0.004 ? 'amount-neg' : '' ?>"><?= money($remaining) ?></b></div>
+          <div class="row-t"><span>إجمالي الأصناف</span><b class="num"><?= egp($inv['subtotal']) ?></b></div>
+          <?php if ((float)$inv['discount']): ?><div class="row-t"><span>الخصم</span><b class="num">− <?= egp($inv['discount']) ?></b></div><?php endif; ?>
+          <?php if ((float)$inv['transport']): ?><div class="row-t"><span>مصاريف النقل</span><b class="num">+ <?= egp($inv['transport']) ?></b></div><?php endif; ?>
+          <?php if ((float)$inv['vat']): ?><div class="row-t"><span>ضريبة القيمة المضافة</span><b class="num">+ <?= egp($inv['vat']) ?></b></div><?php endif; ?>
+          <?php if ((float)$inv['other_fees']): ?><div class="row-t"><span>رسوم أخرى</span><b class="num">+ <?= egp($inv['other_fees']) ?></b></div><?php endif; ?>
+          <div class="row-t grand"><span>إجمالي الفاتورة</span><b class="num"><?= egp($inv['total']) ?></b></div>
+          <div class="row-t mt-2"><span>المسدد</span><b class="num amount-pos"><?= egp($inv['paid_amount']) ?></b></div>
+          <div class="row-t"><span>المتبقي</span><b class="num <?= $remaining > 0.004 ? 'amount-neg' : '' ?>"><?= egp($remaining) ?></b></div>
         </div>
         <?php if ($vouchers): ?>
         <div class="cardx mt-3 no-print"><div class="head">السندات المرتبطة</div><ul class="list-group list-group-flush">
-          <?php foreach ($vouchers as $v): ?><li class="list-group-item d-flex justify-content-between"><a href="<?= e(url('vouchers/view.php?id=' . (int)$v['id'])) ?>"><?= e($v['doc_no']) ?></a><span class="num"><?= money($v['amount']) ?> <?= $v['status'] === 'cancelled' ? badge('ملغي') : '' ?></span></li><?php endforeach; ?>
+          <?php foreach ($vouchers as $v): ?><li class="list-group-item d-flex justify-content-between"><a href="<?= e(url('vouchers/view.php?id=' . (int)$v['id'])) ?>"><?= e($v['doc_no']) ?></a><span class="num"><?= egp($v['amount']) ?> <?= $v['status'] === 'cancelled' ? badge('ملغي') : '' ?></span></li><?php endforeach; ?>
         </ul></div>
         <?php endif; ?>
         <?php if ($inv['status'] === 'active'): ?>

@@ -12,6 +12,6 @@ page_start('المستخدمين والصلاحيات', 'users');
   <tr class="<?= $u['is_active'] ? '' : 'text-muted' ?>"><td class="fw-bold"><?= e($u['full_name']) ?></td><td dir="ltr" class="text-end"><?= e($u['username']) ?></td><td><?= e(ROLES[$u['role']]['label'] ?? $u['role']) ?></td>
     <td class="small text-muted" style="max-width:320px"><?= $u['role'] === 'admin' ? 'كل الصلاحيات' : e(implode('، ', array_map(fn($m) => MODULES[$m] ?? $m, $mods))) ?><?= $u['permissions'] && $u['role'] !== 'admin' ? ' ' . badge('مخصصة', 'info') : '' ?></td>
     <td class="small"><?= $u['last_login'] ? e($u['last_login']) : '—' ?></td><td><?= $u['is_active'] ? badge('نشط', 'success') : badge('موقوف') ?></td>
-    <td><a class="btn btn-sm btn-outline-secondary" href="form.php?id=<?= (int)$u['id'] ?>"><i class="bi bi-pencil"></i></a></td></tr>
+    <td><?php if ($u['role'] !== 'admin' || (current_user()['role'] ?? '') === 'admin'): ?><a class="btn btn-sm btn-outline-secondary" href="form.php?id=<?= (int)$u['id'] ?>"><i class="bi bi-pencil"></i></a><?php endif; ?></td></tr>
 <?php endforeach; ?></tbody></table></div></div>
 <?php page_end();

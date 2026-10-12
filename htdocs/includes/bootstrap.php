@@ -8,8 +8,8 @@ declare(strict_types=1);
 const APP_NAME    = 'ماهر البحيري للاستيراد والتصدير';
 const APP_SHORT   = 'ماهر البحيري';
 const APP_NAME_EN = 'Maher El Bahery Import & Export';
-const SCHEMA_VERSION = 2;   // رقم نسخة هيكل قاعدة البيانات (بيترقّى تلقائياً — راجع run_migrations)
-const CURRENCY    = 'جنيه';
+const SCHEMA_VERSION = 3;   // رقم نسخة هيكل قاعدة البيانات (بيترقّى تلقائياً — راجع run_migrations)
+const CURRENCY    = 'ج.م';
 
 date_default_timezone_set('Africa/Cairo');
 mb_internal_encoding('UTF-8');
@@ -41,11 +41,13 @@ const MODULES = [
     'reports'   => 'التقارير',
     'settings'  => 'الإعدادات',
     'audit'     => 'سجل العمليات',
+    'users'     => 'إدارة المستخدمين',
 ];
-const ADMIN_ONLY_MODULES = ['users'];   // إدارة المستخدمين للمدير فقط (عشان محدش يرقّي نفسه لمدير)
+const ADMIN_ONLY_MODULES = [];   // الحماية من ترقية النفس لمدير بتتم في شاشة المستخدمين (غير المدير مايقدرش يلمس حساب مدير)
 
 const ROLES = [
     'admin'      => ['label' => 'مدير النظام',   'modules' => ['*']],
+    'accounts_manager' => ['label' => 'مدير حسابات', 'modules' => ['*']],
     // المحاسب يشوف كل حاجة في النظام ما عدا إدارة المستخدمين
     'accountant' => ['label' => 'محاسب',          'modules' => ['dashboard', 'items', 'stock', 'purchases', 'sales', 'suppliers', 'customers', 'vouchers', 'treasury', 'reports', 'settings', 'audit']],
     // أمين المخزن: المخزن بس (الأصناف، الأرصدة، حركة المخزون، إذن استلام/صرف/تحويل) — بدون أي أرقام مالية
@@ -229,6 +231,8 @@ function next_number(string $name, string $prefix, int $pad = 6): string
 // ── التنسيق والتحقق ──────────────────────────────────────────────────────────
 function e(?string $v): string { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 function money($v): string { return number_format((float)$v, 2, '.', ','); }
+/** مبلغ للعرض في HTML: الرقم + ج.م */
+function egp($v): string { return '<span class="num">' . money($v) . '</span><span class="cur">' . CURRENCY . '</span>'; }
 function qty($v): string
 {
     $s = rtrim(rtrim(number_format((float)$v, 3, '.', ','), '0'), '.');
@@ -403,4 +407,5 @@ function csv_download(string $filename, array $headers, array $rows): never
 }
 
 require_once __DIR__ . '/services.php';
+require_once __DIR__ . '/pwa.php';
 if (!IN_INSTALLER && $pdo) { run_migrations(); }

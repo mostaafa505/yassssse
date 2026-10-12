@@ -60,5 +60,5 @@ require __DIR__ . '/_auth_layout_top.php';
         </div>
         <button class="btn btn-brand w-100 py-2 fs-6">دخول <i class="bi bi-box-arrow-in-left"></i></button>
     </form>
-    <div class="auth-foot"><a href="<?= e(url('auth/forgot.php')) ?>"><i class="bi bi-question-circle"></i> نسيت كلمة المرور؟</a></div>
+    <div class="auth-foot"><a href="#" data-install class="d-none install-btn mb-2"><i class="bi bi-download"></i> تثبيت التطبيق على جهازك</a><br><a href="<?= e(url('auth/forgot.php')) ?>"><i class="bi bi-question-circle"></i> نسيت كلمة المرور؟</a></div>
 <?php require __DIR__ . '/_auth_layout_bottom.php';

@@ -118,6 +118,21 @@ foreach (['dashboard/', 'treasury/', 'purchases/', 'sales/', 'customers/', 'supp
 }
 ok($a->req('users/')['code'] === 403, 'المحاسب ممنوع من إدارة المستخدمين فقط');
 
+echo "▶ مدير حسابات + الصلاحيات الكاملة\n";
+$c->post('users/form.php', ['full_name' => 'مدير الحسابات', 'username' => 'am1', 'password' => 'Am@12345678', 'role' => 'accounts_manager', 'is_active' => '1']);
+ok($val("SELECT role FROM users WHERE username='am1'") === 'accounts_manager', 'إنشاء مستخدم بدور مدير حسابات');
+$m = new Client(); $m->post('auth/login.php', ['username' => 'am1', 'password' => 'Am@12345678']);
+foreach (['dashboard/', 'treasury/', 'purchases/', 'sales/', 'reports/', 'settings/', 'audit/', 'stock/', 'users/', 'users/form.php'] as $path) { ok($m->req($path)['code'] === 200, "مدير الحسابات يدخل $path"); }
+$r = $m->req('users/form.php'); ok(str_contains($r['body'], 'id="allMods"') && !str_contains($r['body'], '<option value="admin"'), 'خانة «تحديد كل الصلاحيات» موجودة والمدير مش في قايمة الأدوار');
+$r = $m->post('users/form.php', ['full_name' => 'x', 'username' => 'evil', 'password' => 'Evil@12345678', 'role' => 'admin', 'is_active' => '1']);
+ok((int)$val("SELECT COUNT(*) FROM users WHERE username='evil'") === 0, 'مدير الحسابات مايقدرش يعمل مدير نظام');
+$adminId = $val("SELECT id FROM users WHERE role='admin' ORDER BY id LIMIT 1");
+$m->req('users/form.php?id=' . $adminId); ok(str_contains($m->lastUrl, 'users/') && !str_contains($m->lastUrl, 'form.php'), 'مدير الحسابات مايفتحش حساب المدير');
+$r = $m->req('dashboard/'); ok(str_contains($r['body'], 'ج.م') && str_contains($r['body'], 'class="cur"'), 'الأرقام بتظهر معاها ج.م');
+$r = $m->req('auth/login.php'); ok(str_contains($r['body'], 'manifest.webmanifest'), 'الصفحات فيها رابط الـ manifest');
+$mf = json_decode($m->req('manifest.webmanifest')['body'], true);
+ok(($mf['display'] ?? '') === 'standalone' && count($mf['icons'] ?? []) >= 3, 'manifest صالح (standalone + أيقونات)');
+
 echo "▶ نسيت كلمة المرور (رمز الاسترداد)\n";
 $f = new Client();
 $r = $f->req('auth/login.php'); ok(str_contains($r['body'], 'نسيت كلمة المرور'), 'رابط «نسيت كلمة المرور» تحت زرار الدخول');

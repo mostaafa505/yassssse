@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `username` varchar(60) NOT NULL,
   `full_name` varchar(120) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `role` enum('admin','accountant','warehouse','sales','purchases','viewer') NOT NULL DEFAULT 'viewer',
+  `role` enum('admin','accounts_manager','accountant','warehouse','sales','purchases','viewer') NOT NULL DEFAULT 'viewer',
   `permissions` text DEFAULT NULL COMMENT 'JSON: قائمة الوحدات المسموحة',
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `failed_logins` int NOT NULL DEFAULT 0,

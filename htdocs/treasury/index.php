@@ -60,13 +60,13 @@ page_start('الخزينة والمصروفات', 'treasury');
 print_header('حركة الخزينة من ' . fdate($from) . ' إلى ' . fdate($to) . ($accId ? ' — ' . db_val('SELECT name FROM treasury_accounts WHERE id=?', [$accId]) : ' — كل الحسابات'));
 ?>
 <div class="row g-3 mb-3">
-  <div class="col-md-3 col-6"><div class="kpi"><div class="label">رصيد أول الفترة</div><div class="value num"><?= money($opening) ?></div></div></div>
-  <div class="col-md-3 col-6"><div class="kpi green"><div class="label">المقبوضات</div><div class="value num"><?= money($sumRec) ?></div></div></div>
-  <div class="col-md-3 col-6"><div class="kpi red"><div class="label">المدفوعات</div><div class="value num"><?= money($sumPay) ?></div></div></div>
-  <div class="col-md-3 col-6"><div class="kpi gold"><div class="label">رصيد آخر الفترة</div><div class="value num"><?= money($closing) ?></div></div></div>
+  <div class="col-md-3 col-6"><div class="kpi"><div class="label">رصيد أول الفترة</div><div class="value num"><?= egp($opening) ?></div></div></div>
+  <div class="col-md-3 col-6"><div class="kpi green"><div class="label">المقبوضات</div><div class="value num"><?= egp($sumRec) ?></div></div></div>
+  <div class="col-md-3 col-6"><div class="kpi red"><div class="label">المدفوعات</div><div class="value num"><?= egp($sumPay) ?></div></div></div>
+  <div class="col-md-3 col-6"><div class="kpi gold"><div class="label">رصيد آخر الفترة</div><div class="value num"><?= egp($closing) ?></div></div></div>
 </div>
 <div class="filters no-print"><form class="row g-2 align-items-end" method="get">
-  <div class="col-md-3"><label class="form-label">الحساب</label><select class="form-select" name="acc"><option value="0">— كل الحسابات —</option><?php foreach ($accounts as $a): ?><option value="<?= (int)$a['id'] ?>"<?= $accId === (int)$a['id'] ? ' selected' : '' ?>><?= e($a['name']) ?> (<?= money(treasury_balance((int)$a['id'])) ?>)</option><?php endforeach; ?></select></div>
+  <div class="col-md-3"><label class="form-label">الحساب</label><select class="form-select" name="acc"><option value="0">— كل الحسابات —</option><?php foreach ($accounts as $a): ?><option value="<?= (int)$a['id'] ?>"<?= $accId === (int)$a['id'] ? ' selected' : '' ?>><?= e($a['name']) ?> (<?= money(treasury_balance((int)$a['id'])) . ' ' . CURRENCY ?>)</option><?php endforeach; ?></select></div>
   <div class="col-md-2"><label class="form-label">من</label><input class="form-control" type="date" name="from" value="<?= e($from) ?>"></div>
   <div class="col-md-2"><label class="form-label">إلى</label><input class="form-control" type="date" name="to" value="<?= e($to) ?>"></div>
   <div class="col-md-2"><label class="form-label">التصنيف</label><select class="form-select" name="cat"><option value="">— الكل —</option><?php foreach (TREASURY_CATEGORIES as $c): ?><option<?= $cat === $c ? ' selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></div>
@@ -87,8 +87,8 @@ print_header('حركة الخزينة من ' . fdate($from) . ' إلى ' . fdate
   <?php foreach ($pageRows as $r): ?>
     <tr><td><?= fdate($r['txn_date']) ?></td><td class="doc-no"><?= $linkFor($r) ?></td><td class="desc"><?= e($r['description']) ?><?= $r['notes'] ? '<div class="small text-muted">' . e($r['notes']) . '</div>' : '' ?></td>
       <td><?= badge($r['category'], (float)$r['receipt_amount'] > 0 ? 'success' : 'warning') ?></td>
-      <td class="num amount-pos"><?= (float)$r['receipt_amount'] ? money($r['receipt_amount']) : '' ?></td><td class="num amount-neg"><?= (float)$r['payment_amount'] ? money($r['payment_amount']) : '' ?></td>
-      <td class="num text-muted"><?= money($r['start_bal']) ?></td><td class="num fw-bold <?= $r['end_bal'] < 0 ? 'amount-neg' : '' ?>"><?= money($r['end_bal']) ?></td>
+      <td class="num amount-pos"><?= (float)$r['receipt_amount'] ? egp($r['receipt_amount']) : '' ?></td><td class="num amount-neg"><?= (float)$r['payment_amount'] ? egp($r['payment_amount']) : '' ?></td>
+      <td class="num text-muted"><?= egp($r['start_bal']) ?></td><td class="num fw-bold <?= $r['end_bal'] < 0 ? 'amount-neg' : '' ?>"><?= egp($r['end_bal']) ?></td>
       <td class="small"><?= e($r['acc_name']) ?><div class="text-muted"><?= e($r['payment_method']) ?></div></td><td class="small"><?= e((string)$r['responsible']) ?></td>
       <td class="no-print text-nowrap">
         <?php if (!$r['ref_type']): ?>
@@ -99,7 +99,7 @@ print_header('حركة الخزينة من ' . fdate($from) . ' إلى ' . fdate
         <?php endif; ?></td></tr>
   <?php endforeach; if (!$pageRows): ?><tr><td colspan="11" class="text-center text-muted py-4">لا توجد حركات في الفترة</td></tr><?php endif; ?>
   </tbody>
-  <tfoot><tr><td colspan="4">إجمالي الفترة</td><td class="num"><?= money($sumRec) ?></td><td class="num"><?= money($sumPay) ?></td><td colspan="5"></td></tr></tfoot>
+  <tfoot><tr><td colspan="4">إجمالي الفترة</td><td class="num"><?= egp($sumRec) ?></td><td class="num"><?= egp($sumPay) ?></td><td colspan="5"></td></tr></tfoot>
 </table></div></div>
 <?= pager($total, $perPage, $page) ?>
 <p class="small text-muted mt-2 no-print">الأرصدة بتتحسب تلقائياً من حركات الحساب بالترتيب الزمني — مفيش رصيد بيتكتب يدوياً. مقبوضات المبيعات والتحصيل ومدفوعات الموردين بتتسجل تلقائياً من الفواتير والسندات.</p>

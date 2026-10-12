@@ -16,17 +16,17 @@
     // عدّاد تصاعدي لأرقام لوحة الرئيسية (تأثير بصري خفيف)
     if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         $$('[data-count]').forEach(function (el) {
-            var to = parseFloat(el.getAttribute('data-count')), isInt = el.hasAttribute('data-int');
+            var tgt = el.querySelector('.num') || el, to = parseFloat(el.getAttribute('data-count')), isInt = el.hasAttribute('data-int');
             if (isNaN(to)) return;
             var start = null, dur = 700;
             var fmt = function (n) { return isInt ? String(Math.round(n)) : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
             var step = function (ts) {
                 if (start === null) start = ts;
                 var k = Math.min(1, (ts - start) / dur), e = 1 - Math.pow(1 - k, 3);
-                el.textContent = fmt(to * e);
-                if (k < 1) requestAnimationFrame(step); else el.textContent = fmt(to);
+                tgt.textContent = fmt(to * e);
+                if (k < 1) requestAnimationFrame(step); else tgt.textContent = fmt(to);
             };
-            el.textContent = fmt(0); requestAnimationFrame(step);
+            tgt.textContent = fmt(0); requestAnimationFrame(step);
         });
     }
 

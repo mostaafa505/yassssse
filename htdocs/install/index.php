@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ([
                 'company_name' => 'ماهر البحيري للاستيراد والتصدير', 'company_name_en' => 'Maher El Bahery Import & Export',
                 'company_phone' => '', 'company_address' => '', 'company_tax_no' => '', 'company_commercial_no' => '',
-                'invoice_footer' => 'شكراً لتعاملكم معنا', 'vat_rate' => '14', 'allow_negative_treasury' => '0', 'schema_version' => '2',
+                'invoice_footer' => 'شكراً لتعاملكم معنا', 'vat_rate' => '14', 'allow_negative_treasury' => '0', 'schema_version' => '3',
             ] as $k => $val) { $st->execute([$k, $val]); }
             $pdo->commit();
 
@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>تثبيت النظام | <?= e(APP_NAME) ?></title>
+<?php pwa_head(); ?>
 <link rel="icon" type="image/svg+xml" href="<?= e(url('assets/favicon.svg')) ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -136,5 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 </div>
+<?php pwa_footer(); ?>
 </body>
 </html>

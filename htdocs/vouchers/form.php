@@ -26,7 +26,7 @@ if (!$f['account_id']) { $f['account_id'] = $accounts[0]['id'] ?? 0; }
 $kind = $isReceipt ? 'sale' : 'purchase'; $ic = inv_cfg($kind);
 $openMap = [];
 foreach (db_all("SELECT id, {$ic['party_col']} AS pid, doc_no, invoice_date, total, paid_amount FROM {$ic['table']} WHERE status='active' AND total - paid_amount > 0.005 ORDER BY invoice_date, id") as $o) {
-    $openMap[$o['pid']][] = ['id' => (int)$o['id'], 'label' => $o['doc_no'] . ' — ' . fdate($o['invoice_date']) . ' — متبقي ' . money((float)$o['total'] - (float)$o['paid_amount']), 'remaining' => round((float)$o['total'] - (float)$o['paid_amount'], 2)];
+    $openMap[$o['pid']][] = ['id' => (int)$o['id'], 'label' => $o['doc_no'] . ' — ' . fdate($o['invoice_date']) . ' — متبقي ' . money((float)$o['total'] - (float)$o['paid_amount']) . ' ' . CURRENCY, 'remaining' => round((float)$o['total'] - (float)$o['paid_amount'], 2)];
 }
 page_start($isReceipt ? 'سند قبض من عميل' : 'سند صرف لمورد', 'vouchers');
 ?>

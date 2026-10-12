@@ -6,7 +6,8 @@ $company = setting('company_name', APP_NAME);
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($page_title ?? 'تسجيل الدخول') ?> | <?= e($company) ?></title>
-<meta name="theme-color" content="#d3e8f9">
+<meta name="theme-color" content="#1a68a8">
+<?php pwa_head(); ?>
 <link rel="icon" type="image/svg+xml" href="<?= e(url('assets/favicon.svg')) ?>">
 <link rel="apple-touch-icon" href="<?= e(url('assets/img/apple-touch-icon.png')) ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">

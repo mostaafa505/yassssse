@@ -218,7 +218,8 @@ db_exec('UPDATE users SET failed_logins=0, locked_until=NULL WHERE id=1');
 echo "▶ الصلاحيات حسب الدور\n";
 $allMods = array_keys(MODULES);
 ok(role_modules('admin') === $allMods, 'المدير: كل الوحدات');
-ok(!array_diff($allMods, role_modules('accountant')), 'المحاسب: كل وحدات الأعمال (' . count(role_modules('accountant')) . ')');
+ok(!array_diff(array_diff($allMods, ['users']), role_modules('accountant')), 'المحاسب: كل وحدات الأعمال (' . count(role_modules('accountant')) . ')');
+ok(role_modules('accounts_manager') === $allMods, 'مدير الحسابات: كل الوحدات بما فيها المستخدمين');
 ok(role_modules('warehouse') === ['items', 'stock'], 'أمين المخزن: الأصناف والمخزن فقط');
 ok(!in_array('users', role_modules('accountant'), true), 'إدارة المستخدمين خارج وحدات المحاسب');
 
@@ -231,6 +232,17 @@ $inP = array_sum(array_column($stm2['rows'], 'invoice_amount')); $outP = array_s
 eqf($stm2['closing'] - $inP + $outP, $stm2['opening'], 'كشف بفترة: الافتتاحي ضمن الرصيد السابق والإجماليات متسقة');
 ok(!in_array('opening', array_column($stm2['rows'], 'doc_type'), true), 'كشف بفترة: لا يكرر سطر الافتتاحي');
 eqf($stm2['closing'], party_balance('supplier', $sup), 'كشف بفترة مفتوحة النهاية: الرصيد الختامي = رصيد الحساب');
+
+echo "▶ مصروفات الفواتير + الفواتير المتأخرة\n";
+$expRaw = db_one("SELECT COALESCE(SUM(transport + other_fees),0) t FROM purchases WHERE status='active'");
+eqf(invoice_expenses(null, null)['total'], (float)$expRaw['t'], 'مصروفات الفواتير = نقل + رسوم أخرى لفواتير المشتريات الفعّالة فقط');
+$grossP = (float)db_val("SELECT COALESCE(SUM(total),0) FROM purchases WHERE status='active'");
+ok($grossP >= invoice_expenses(null, null)['total'], 'إجمالي المشتريات (بالإجمالي) أكبر من أو يساوي مصروفات الفواتير');
+eqf(invoice_expenses('2099-01-01', null)['total'], 0, 'مصروفات الفواتير في فترة فاضية = صفر');
+$late = overdue_invoices(50);
+$prev = PHP_INT_MAX; $sorted = true; foreach ($late as $l) { if ($l['days_late'] > $prev || $l['days_late'] < 1 || $l['remaining'] <= 0) { $sorted = false; } $prev = $l['days_late']; }
+ok($sorted, 'الفواتير المتأخرة مرتبة بالأقدم تأخيراً وكلها فيها متبقي وتأخير فعلي');
+ok(money(1234.5) === '1,234.50' && str_contains(egp(5), CURRENCY) && CURRENCY === 'ج.م', 'egp() بتضيف ج.م');
 
 // نسيب بيانات الاختبار في القاعدة عشان فحص الشاشات (tests/smoke.sh) — كلمة مرور المستخدم t
 db_exec('UPDATE users SET password_hash=?, failed_logins=0, locked_until=NULL WHERE id=1', [password_hash('Test@12345', PASSWORD_DEFAULT)]);

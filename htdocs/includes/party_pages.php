@@ -40,7 +40,7 @@ function party_list_page(string $type): void
     <div class="cardx">
       <div class="head"><i class="bi bi-people"></i> <?= e($c['plural']) ?> <span class="text-muted small fw-normal">(<?= count($rows) ?>)</span>
         <span class="ms-auto d-flex gap-2 flex-wrap align-items-center">
-          <span class="badge-soft danger"><?= $isCust ? 'إجمالي ما عليهم' : 'إجمالي ما لهم علينا' ?>: <b class="num"><?= money(array_sum(array_map(fn($r) => max(0, (float)$r['balance']), $rows))) ?></b></span>
+          <span class="badge-soft danger"><?= $isCust ? 'إجمالي ما عليهم' : 'إجمالي ما لهم علينا' ?>: <b class="num"><?= egp(array_sum(array_map(fn($r) => max(0, (float)$r['balance']), $rows))) ?></b></span>
         </span></div>
       <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -50,11 +50,11 @@ function party_list_page(string $type): void
             <tr class="<?= $r['is_active'] ? '' : 'text-muted' ?>">
               <td><a class="fw-bold text-decoration-none" href="statement.php?id=<?= (int)$r['id'] ?>"><?= e($r['name']) ?></a><?= $r['is_active'] ? '' : ' ' . badge('موقوف') ?>
                   <div class="small text-muted"><?= e($r['contact_person'] ?? '') ?><?= $r['phone'] ? ' · <span dir="ltr">' . e($r['phone']) . '</span>' : '' ?></div></td>
-              <td class="num"><?= money($r['total_invoiced']) ?></td>
-              <td class="num"><?= money($r['total_paid']) ?></td>
-              <td><span class="bal <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'عليه' : 'له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد' : 'لنا عنده') : 'الرصيد') ?></small><b><?= $balCls === 'zero' ? '0.00' : money(abs((float)$r['balance'])) ?></b></span></td>
-              <td><?php if ($r['next_due']): $late = $r['next_due'] < today(); ?><span class="<?= $late ? 'amount-neg' : '' ?>"><?= fdate($r['next_due']) ?></span><div class="small text-muted num">متبقي فواتير <?= money($r['open_amt']) ?></div><?php else: ?>—<?php endif; ?></td>
-              <td class="num"><?= (float)$r['overdue'] > 0.005 ? '<span class="amount-neg">' . money($r['overdue']) . '</span>' : '—' ?></td>
+              <td class="num"><?= egp($r['total_invoiced']) ?></td>
+              <td class="num"><?= egp($r['total_paid']) ?></td>
+              <td><span class="bal <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'عليه' : 'له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد' : 'لنا عنده') : 'الرصيد') ?></small><b><?= $balCls === 'zero' ? '0.00' : egp(abs((float)$r['balance'])) ?></b></span></td>
+              <td><?php if ($r['next_due']): $late = $r['next_due'] < today(); ?><span class="<?= $late ? 'amount-neg' : '' ?>"><?= fdate($r['next_due']) ?></span><div class="small text-muted num">متبقي فواتير <?= egp($r['open_amt']) ?></div><?php else: ?>—<?php endif; ?></td>
+              <td class="num"><?= (float)$r['overdue'] > 0.005 ? '<span class="amount-neg">' . egp($r['overdue']) . '</span>' : '—' ?></td>
               <td><?= badge(PARTY_STATUS_LABELS[$r['status_key']], PARTY_STATUS_CLASS[$r['status_key']]) ?></td>
               <td class="no-print text-nowrap">
                 <a class="btn btn-sm btn-outline-brand" href="statement.php?id=<?= (int)$r['id'] ?>"><i class="bi bi-journal-text"></i> كشف حساب</a>
@@ -63,7 +63,7 @@ function party_list_page(string $type): void
             </tr>
           <?php endforeach; if (!$rows): ?><tr><td colspan="8" class="text-center text-muted">لا توجد حسابات</td></tr><?php endif; ?>
           </tbody>
-          <?php if ($rows): ?><tfoot><tr><td>الإجمالي</td><td class="num"><?= money(array_sum(array_column($rows, 'total_invoiced'))) ?></td><td class="num"><?= money(array_sum(array_column($rows, 'total_paid'))) ?></td><td class="num"><?= money($totalBal) ?></td><td></td><td class="num"><?= money($totalOver) ?></td><td colspan="2"></td></tr></tfoot><?php endif; ?>
+          <?php if ($rows): ?><tfoot><tr><td>الإجمالي</td><td class="num"><?= egp(array_sum(array_column($rows, 'total_invoiced'))) ?></td><td class="num"><?= egp(array_sum(array_column($rows, 'total_paid'))) ?></td><td class="num"><?= egp($totalBal) ?></td><td></td><td class="num"><?= egp($totalOver) ?></td><td colspan="2"></td></tr></tfoot><?php endif; ?>
         </table>
       </div>
     </div>
@@ -166,14 +166,14 @@ function party_statement_page(string $type): void
             <span><i class="bi bi-hourglass-split"></i>مدة <?= $isCust ? 'التحصيل' : 'السداد' ?> <?= (int)$p['credit_days'] ?> يوم</span>
           </div>
         </div>
-        <div class="bal bal-hero <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'المتبقي عليه' : 'المتبقي له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد دائن' : 'لنا عنده') : 'الرصيد') ?> (<?= CURRENCY ?>)</small><b><?= $balCls === 'zero' ? '0.00' : money(abs((float)$sum['balance'])) ?></b></div>
+        <div class="bal bal-hero <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'المتبقي عليه' : 'المتبقي له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد دائن' : 'لنا عنده') : 'الرصيد') ?> (<?= CURRENCY ?>)</small><b><?= $balCls === 'zero' ? '0.00' : egp(abs((float)$sum['balance'])) ?></b></div>
       </div>
     </div></div>
     <div class="row g-3 mb-3">
-      <div class="col-md-3 col-6"><div class="kpi"><div class="label">إجمالي الفواتير</div><div class="value num"><?= money($sum['total_invoiced']) ?></div><div class="sub">+ رصيد افتتاحي <?= money($sum['opening_bal']) ?></div><i class="bi bi-receipt bg"></i></div></div>
-      <div class="col-md-3 col-6"><div class="kpi green"><div class="label"><?= $isCust ? 'إجمالي ما دفعه' : 'إجمالي ما سُدِّد له' ?></div><div class="value num"><?= money($sum['total_paid']) ?></div><div class="sub"><?= $isCust ? 'تحصيلات وخصومات' : 'مدفوعات وخصومات' ?></div><i class="bi bi-cash-coin bg"></i></div></div>
-      <div class="col-md-3 col-6"><div class="kpi gold"><div class="label">أقرب موعد استحقاق</div><div class="value fs-4"><?= $sum['next_due'] ? fdate($sum['next_due']) : '—' ?></div><div class="sub"><?= $sum['next_due'] ? 'متبقي فواتير ' . money($sum['open_amt']) : 'لا توجد فواتير مفتوحة' ?></div><i class="bi bi-calendar-event bg"></i></div></div>
-      <div class="col-md-3 col-6"><div class="kpi red"><div class="label">المتأخر عن الاستحقاق</div><div class="value num"><?= money($sum['overdue']) ?></div><div class="sub"><?= $sum['max_days'] ? 'أقدم تأخير ' . (int)$sum['max_days'] . ' يوم' : 'لا يوجد تأخير' ?></div><i class="bi bi-exclamation-octagon bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi"><div class="label">إجمالي الفواتير</div><div class="value num"><?= egp($sum['total_invoiced']) ?></div><div class="sub">+ رصيد افتتاحي <?= egp($sum['opening_bal']) ?></div><i class="bi bi-receipt bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi green"><div class="label"><?= $isCust ? 'إجمالي ما دفعه' : 'إجمالي ما سُدِّد له' ?></div><div class="value num"><?= egp($sum['total_paid']) ?></div><div class="sub"><?= $isCust ? 'تحصيلات وخصومات' : 'مدفوعات وخصومات' ?></div><i class="bi bi-cash-coin bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi gold"><div class="label">أقرب موعد استحقاق</div><div class="value fs-4"><?= $sum['next_due'] ? fdate($sum['next_due']) : '—' ?></div><div class="sub"><?= $sum['next_due'] ? 'متبقي فواتير ' . egp($sum['open_amt']) : 'لا توجد فواتير مفتوحة' ?></div><i class="bi bi-calendar-event bg"></i></div></div>
+      <div class="col-md-3 col-6"><div class="kpi red"><div class="label">المتأخر عن الاستحقاق</div><div class="value num"><?= egp($sum['overdue']) ?></div><div class="sub"><?= $sum['max_days'] ? 'أقدم تأخير ' . (int)$sum['max_days'] . ' يوم' : 'لا يوجد تأخير' ?></div><i class="bi bi-exclamation-octagon bg"></i></div></div>
     </div>
 
     <div class="filters no-print">
@@ -201,7 +201,7 @@ function party_statement_page(string $type): void
         <table class="table table-hover align-middle">
           <thead><tr><th>التاريخ</th><th>رقم المستند</th><th>البيان</th><th class="num">الرصيد السابق</th><th class="num"><?= $isCust ? 'الفاتورة / المبيعات' : 'الفاتورة / المشتريات' ?></th><th class="num"><?= e($c['pay_label']) ?></th><th class="num">الرصيد المتبقي</th><th>الاستحقاق</th><th class="no-print"></th></tr></thead>
           <tbody>
-          <?php if ($from): ?><tr class="table-light"><td colspan="3">رصيد مرحَّل قبل <?= fdate($from) ?></td><td></td><td></td><td></td><td class="num fw-bold"><?= money($stm['opening']) ?></td><td colspan="2"></td></tr><?php endif; ?>
+          <?php if ($from): ?><tr class="table-light"><td colspan="3">رصيد مرحَّل قبل <?= fdate($from) ?></td><td></td><td></td><td></td><td class="num fw-bold"><?= egp($stm['opening']) ?></td><td colspan="2"></td></tr><?php endif; ?>
           <?php foreach ($stm['rows'] as $r): ?>
             <tr>
               <td><?= fdate($r['entry_date']) ?></td>
@@ -209,10 +209,10 @@ function party_statement_page(string $type): void
                   if ($r['ref_type'] === $kind && $r['ref_id']) { echo '<a href="' . e(url($c['inv'] . '/view.php?id=' . (int)$r['ref_id'])) . '">' . e((string)$r['doc_no']) . '</a>'; }
                   else { echo e((string)$r['doc_no']); } ?></td>
               <td><span class="badge-soft info"><?= e($docLabels[$r['doc_type']] ?? '') ?></span> <span class="small text-muted"><?= e((string)$r['notes']) ?></span></td>
-              <td class="num"><?= money($r['prev_balance']) ?></td>
-              <td class="num"><?= (float)$r['invoice_amount'] ? money($r['invoice_amount']) : '' ?></td>
-              <td class="num"><?= (float)$r['payment_amount'] ? money($r['payment_amount']) : '' ?></td>
-              <td class="num fw-bold"><?= money($r['balance']) ?></td>
+              <td class="num"><?= egp($r['prev_balance']) ?></td>
+              <td class="num"><?= (float)$r['invoice_amount'] ? egp($r['invoice_amount']) : '' ?></td>
+              <td class="num"><?= (float)$r['payment_amount'] ? egp($r['payment_amount']) : '' ?></td>
+              <td class="num fw-bold"><?= egp($r['balance']) ?></td>
               <td><?= fdate($r['due_date']) ?></td>
               <td class="no-print"><?php if ($r['ref_type'] === 'note'): ?>
                 <form method="post" data-confirm="حذف الإشعار؟" class="d-inline"><?= csrf_field() ?><input type="hidden" name="action" value="del_note"><input type="hidden" name="ledger_id" value="<?= (int)$r['id'] ?>"><button class="btn btn-sm btn-link text-danger p-0"><i class="bi bi-trash"></i></button></form>
@@ -221,9 +221,9 @@ function party_statement_page(string $type): void
           <?php endforeach; if (!$stm['rows']): ?><tr><td colspan="9" class="text-center text-muted py-4">لا توجد حركات في الفترة</td></tr><?php endif; ?>
           </tbody>
           <tfoot><tr><td colspan="4">الإجمالي</td>
-            <td class="num"><?= money(array_sum(array_column($stm['rows'], 'invoice_amount'))) ?></td>
-            <td class="num"><?= money(array_sum(array_column($stm['rows'], 'payment_amount'))) ?></td>
-            <td class="num"><?= money($stm['closing']) ?></td><td colspan="2"></td></tr></tfoot>
+            <td class="num"><?= egp(array_sum(array_column($stm['rows'], 'invoice_amount'))) ?></td>
+            <td class="num"><?= egp(array_sum(array_column($stm['rows'], 'payment_amount'))) ?></td>
+            <td class="num"><?= egp($stm['closing']) ?></td><td colspan="2"></td></tr></tfoot>
         </table>
       </div>
     </div>
@@ -235,7 +235,7 @@ function party_statement_page(string $type): void
         <thead><tr><th>رقم الفاتورة</th><th>التاريخ</th><th>الاستحقاق</th><th class="num">الإجمالي</th><th class="num">المسدد</th><th class="num">المتبقي</th><th>الحالة</th></tr></thead>
         <tbody><?php foreach ($open as $o): $late = $o['due_date'] && $o['due_date'] < today(); ?>
           <tr><td><a href="<?= e(url($c['inv'] . '/view.php?id=' . (int)$o['id'])) ?>"><?= e($o['doc_no']) ?></a></td><td><?= fdate($o['invoice_date']) ?></td><td><?= fdate($o['due_date']) ?></td>
-              <td class="num"><?= money($o['total']) ?></td><td class="num"><?= money($o['paid_amount']) ?></td><td class="num fw-bold"><?= money($o['remaining']) ?></td>
+              <td class="num"><?= egp($o['total']) ?></td><td class="num"><?= egp($o['paid_amount']) ?></td><td class="num fw-bold"><?= egp($o['remaining']) ?></td>
               <td><?= $late ? badge('متأخر ' . (int)((strtotime(today()) - strtotime($o['due_date'])) / 86400) . ' يوم', 'danger') : badge('في الميعاد', 'success') ?></td></tr>
         <?php endforeach; ?></tbody></table></div>
     </div>

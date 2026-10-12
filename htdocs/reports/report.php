@@ -8,7 +8,7 @@ $r = get_str('r', 40);
 $from = parse_date($_GET['from'] ?? '') ?: date('Y-m-01');
 $to = parse_date($_GET['to'] ?? '') ?: today();
 $today = today();
-$usesPeriod = in_array($r, ['summary', 'expenses', 'sales_by_customer', 'purchases_by_supplier'], true);
+$usesPeriod = in_array($r, ['summary', 'expenses', 'treasury_expenses', 'sales_by_customer', 'purchases_by_supplier'], true);
 
 /** كل تقرير بيرجّع: عنوان، أعمدة، صفوف، أعمدة رقمية، وإجماليات اختيارية */
 $title = ''; $heads = []; $rows = []; $numCols = []; $totalCols = []; $note = '';
@@ -23,10 +23,13 @@ switch ($r) {
         $expT  = array_sum(array_column($exp, 't'));
         $netCash = (float)db_val('SELECT COALESCE(SUM(receipt_amount - payment_amount),0) FROM treasury_transactions WHERE txn_date BETWEEN ? AND ?', [$from, $to]);
         $heads = ['البند', 'المبلغ (' . CURRENCY . ')'];
-        $rows = [['إجمالي المبيعات (فواتير فعّالة)', $sales], ['إجمالي المشتريات (فواتير فعّالة)', $purch], ['المقبوض من العملاء (تحصيلات + مبيعات نقدية)', $coll], ['المدفوع للموردين (شراء بضاعة)', $paidS]];
-        foreach ($exp as $x) { $rows[] = ['مصروف: ' . $x['category'], (float)$x['t']]; }
-        $rows[] = ['إجمالي المصروفات', $expT]; $rows[] = ['صافي حركة الخزينة والبنك في الفترة', $netCash];
-        $rows[] = ['فرق المبيعات عن المشتريات والمصروفات (تقريبي — بدون تكلفة البضاعة المباعة)', $sales - $purch - $expT];
+        $ie = invoice_expenses($from, $to);
+        $rows = [['إجمالي المبيعات (فواتير فعّالة)', $sales], ['إجمالي المشتريات (إجمالي فواتير الشراء)', $purch],
+                 ['مصروفات الفواتير: مصاريف النقل', $ie['transport']], ['مصروفات الفواتير: رسوم أخرى', $ie['other_fees']], ['إجمالي مصروفات الفواتير', $ie['total']],
+                 ['المقبوض من العملاء (تحصيلات + مبيعات نقدية)', $coll], ['المدفوع للموردين (شراء بضاعة)', $paidS]];
+        foreach ($exp as $x) { $rows[] = ['مصروف خزينة: ' . $x['category'], (float)$x['t']]; }
+        $rows[] = ['إجمالي مصروفات الخزينة (منفصلة عن الفواتير)', $expT]; $rows[] = ['صافي حركة الخزينة والبنك في الفترة', $netCash];
+        $rows[] = ['فرق المبيعات عن المشتريات ومصروفات الفواتير (تقريبي — بدون تكلفة البضاعة المباعة)', $sales - $purch - $ie['total']];
         $numCols = [1];
         $note = 'الفرق التقريبي لا يمثل ربحاً محاسبياً دقيقاً لأنه لا يحسب تكلفة البضاعة المباعة فعلياً؛ استشر المحاسب للمركز المالي.';
         break;
@@ -56,7 +59,18 @@ switch ($r) {
         break;
 
     case 'expenses':
-        $title = 'تقرير المصروفات';
+        $title = 'تقرير المصروفات (من فواتير المشتريات)';
+        $heads = ['التاريخ', 'رقم الفاتورة', 'المورد', 'مصاريف النقل', 'رسوم أخرى', 'إجمالي المصروفات'];
+        foreach (db_all("SELECT p.invoice_date, p.doc_no, s.name, p.transport, p.other_fees FROM purchases p JOIN suppliers s ON s.id=p.supplier_id
+                         WHERE p.status='active' AND (p.transport > 0 OR p.other_fees > 0) AND p.invoice_date BETWEEN ? AND ? ORDER BY p.invoice_date, p.id", [$from, $to]) as $t) {
+            $rows[] = [$t['invoice_date'], $t['doc_no'], $t['name'], (float)$t['transport'], (float)$t['other_fees'], (float)$t['transport'] + (float)$t['other_fees']];
+        }
+        $numCols = [3, 4, 5]; $totalCols = [3, 4, 5];
+        $note = 'المصروفات هنا هي المصاريف المسجلة داخل فواتير المشتريات فقط (النقل + الرسوم الأخرى). المشتريات نفسها بتتحسب بإجمالي الفواتير في تقرير المشتريات والرئيسية.';
+        break;
+
+    case 'treasury_expenses':
+        $title = 'مصروفات الخزينة (إيجار، مرتبات، نقل...)';
         $heads = ['التاريخ', 'رقم المستند', 'البيان', 'التصنيف', 'المبلغ', 'طريقة الدفع', 'المسؤول'];
         foreach (db_all("SELECT * FROM treasury_transactions WHERE category IN ('" . implode("','", EXPENSE_CATEGORIES) . "') AND txn_date BETWEEN ? AND ? ORDER BY txn_date, id", [$from, $to]) as $t) {
             $rows[] = [$t['txn_date'], $t['doc_no'], $t['description'], $t['category'], (float)$t['payment_amount'], $t['payment_method'], (string)$t['responsible']];
@@ -96,7 +110,7 @@ if (isset($_GET['export'])) { csv_download($title, $heads, $rows); }
 page_start($title, 'reports');
 print_header($title . ($usesPeriod ? ' — من ' . fdate($from) . ' إلى ' . fdate($to) : ' — بتاريخ ' . fdate($today)));
 $fmtCell = function ($v, bool $isNum, bool $isQty) {
-    if ($isNum && is_numeric($v)) { return $isQty ? qty($v) : money($v); }
+    if ($isNum && is_numeric($v)) { return $isQty ? qty($v) : egp($v); }
     if (is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $v)) { return fdate($v); }
     return e((string)$v);
 };
@@ -118,7 +132,7 @@ $qtyReport = $r === 'stock_value';
   <?php foreach ($rows as $row): ?><tr><?php foreach ($row as $i => $v): ?><td class="<?= in_array($i, $numCols, true) ? 'num' : '' ?>"><?= $fmtCell($v, in_array($i, $numCols, true), $qtyReport) ?></td><?php endforeach; ?></tr>
   <?php endforeach; if (!$rows): ?><tr><td colspan="<?= count($heads) ?>" class="text-center text-muted py-4">لا توجد بيانات</td></tr><?php endif; ?>
   </tbody>
-  <?php if ($totalCols && $rows): ?><tfoot><tr><?php foreach ($heads as $i => $h): ?><td class="<?= in_array($i, $numCols, true) ? 'num' : '' ?>"><?= $i === 0 ? 'الإجمالي' : (in_array($i, $totalCols, true) ? ($i === 1 && $r === 'sales_by_customer' || $i === 1 && $r === 'purchases_by_supplier' ? (string)array_sum(array_column($rows, $i)) : money(array_sum(array_column($rows, $i)))) : '') ?></td><?php endforeach; ?></tr></tfoot><?php endif; ?>
+  <?php if ($totalCols && $rows): ?><tfoot><tr><?php foreach ($heads as $i => $h): ?><td class="<?= in_array($i, $numCols, true) ? 'num' : '' ?>"><?= $i === 0 ? 'الإجمالي' : (in_array($i, $totalCols, true) ? ($i === 1 && $r === 'sales_by_customer' || $i === 1 && $r === 'purchases_by_supplier' ? (string)array_sum(array_column($rows, $i)) : egp(array_sum(array_column($rows, $i)))) : '') ?></td><?php endforeach; ?></tr></tfoot><?php endif; ?>
 </table></div></div>
 <?php if ($note): ?><p class="text-muted small mt-2"><?= e($note) ?></p><?php endif; ?>
 <?php page_end();

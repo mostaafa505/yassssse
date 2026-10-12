@@ -884,6 +884,10 @@ function run_migrations(): void
             // الاسم الإنجليزي الجديد (لو لسه على القيمة القديمة الافتراضية)
             db_exec("UPDATE settings SET svalue='Maher El Bahery Import & Export' WHERE skey='company_name_en' AND svalue IN ('Maher El-Beheiry Import & Export','')");
         }
+        if ($v < 3) {
+            // دور «مدير حسابات»
+            db_exec("ALTER TABLE users MODIFY role enum('admin','accounts_manager','accountant','warehouse','sales','purchases','viewer') NOT NULL DEFAULT 'viewer'");
+        }
         set_setting('schema_version', (string)SCHEMA_VERSION);
     } catch (Throwable $e) {
         error_log('[mb] migration failed: ' . $e->getMessage());
@@ -955,8 +959,8 @@ function reset_password_with_code(string $username, string $code, string $newPas
 function balance_phrase(string $partyType, float $bal): array
 {
     if (abs($bal) < 0.005) { return ['لا يوجد رصيد', 'zero']; }
-    if ($partyType === 'customer') { return $bal > 0 ? ['عليه ' . money($bal), 'owes'] : ['له رصيد ' . money(-$bal), 'credit']; }
-    return $bal > 0 ? ['له علينا ' . money($bal), 'owes'] : ['لنا عنده ' . money(-$bal), 'credit'];
+    if ($partyType === 'customer') { return $bal > 0 ? ['عليه ' . money($bal) . ' ' . CURRENCY, 'owes'] : ['له رصيد ' . money(-$bal) . ' ' . CURRENCY, 'credit']; }
+    return $bal > 0 ? ['له علينا ' . money($bal) . ' ' . CURRENCY, 'owes'] : ['لنا عنده ' . money(-$bal) . ' ' . CURRENCY, 'credit'];
 }
 
 /** أكتر الأصناف مبيعاً (بالكمية) في فترة */
@@ -968,4 +972,30 @@ function top_selling_items(?string $from, ?string $to, int $limit = 5): array
     return db_all("SELECT it.id, it.name, it.unit, SUM(si.qty) AS qty_sold, SUM(si.line_total) AS revenue, COUNT(DISTINCT s.id) AS invoices
                    FROM sale_items si JOIN sales s ON s.id = si.sale_id JOIN items it ON it.id = si.item_id
                    WHERE $where GROUP BY it.id, it.name, it.unit ORDER BY qty_sold DESC, revenue DESC LIMIT " . (int)$limit, $params);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  المصروفات من الفواتير + الفواتير المتأخرة
+// ════════════════════════════════════════════════════════════════════════════
+/** مصروفات الفواتير فقط: النقل + الرسوم الأخرى في فواتير المشتريات الفعّالة (المشتريات نفسها بتتحسب بالإجمالي لوحدها) */
+function invoice_expenses(?string $from, ?string $to): array
+{
+    $where = "status='active'"; $params = [];
+    if ($from) { $where .= ' AND invoice_date >= ?'; $params[] = $from; }
+    if ($to)   { $where .= ' AND invoice_date <= ?'; $params[] = $to; }
+    $r = db_one("SELECT COALESCE(SUM(transport),0) AS transport, COALESCE(SUM(other_fees),0) AS other_fees FROM purchases WHERE $where", $params) ?: [];
+    $t = (float)($r['transport'] ?? 0); $o = (float)($r['other_fees'] ?? 0);
+    return ['transport' => $t, 'other_fees' => $o, 'total' => $t + $o];
+}
+
+/** الفواتير المتأخرة (مبيعات + مشتريات) الأقدم تأخيراً أولاً */
+function overdue_invoices(int $limit = 8, bool $sales = true, bool $purchases = true): array
+{
+    $parts = [];
+    if ($sales)     { $parts[] = "SELECT 'sales' AS kind, s.id, s.doc_no, s.due_date, s.total - s.paid_amount AS remaining, c.id AS party_id, c.name AS party_name FROM sales s JOIN customers c ON c.id=s.customer_id WHERE s.status='active' AND s.total - s.paid_amount > 0.005 AND s.due_date < CURDATE()"; }
+    if ($purchases) { $parts[] = "SELECT 'purchases' AS kind, p.id, p.doc_no, p.due_date, p.total - p.paid_amount AS remaining, su.id AS party_id, su.name AS party_name FROM purchases p JOIN suppliers su ON su.id=p.supplier_id WHERE p.status='active' AND p.total - p.paid_amount > 0.005 AND p.due_date < CURDATE()"; }
+    if (!$parts) { return []; }
+    $rows = db_all('SELECT *, DATEDIFF(CURDATE(), due_date) AS days_late FROM (' . implode(' UNION ALL ', $parts) . ') x ORDER BY days_late DESC, remaining DESC LIMIT ' . max(1, $limit));
+    foreach ($rows as &$r) { $r['days_late'] = (int)$r['days_late']; $r['remaining'] = (float)$r['remaining']; } unset($r);
+    return $rows;
 }

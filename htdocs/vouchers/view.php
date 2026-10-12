@@ -30,15 +30,15 @@ print_header(($isReceipt ? 'سند قبض رقم ' : 'سند صرف رقم ') . 
 </div>
 <div class="cardx" style="max-width:760px"><div class="body">
   <div class="d-flex justify-content-between align-items-start mb-3"><div><div class="text-muted small"><?= $isReceipt ? 'استلمنا من السيد / السادة' : 'صرفنا إلى السيد / السادة' ?></div><div class="fs-4 fw-bold"><?= e($party['name']) ?></div></div>
-    <div class="text-end"><?= $v['status'] === 'active' ? badge('فعّال', 'success') : badge('ملغي', 'danger') ?><div class="fs-3 fw-bold num text-navy mt-1"><?= money($v['amount']) ?> <small><?= CURRENCY ?></small></div></div></div>
+    <div class="text-end"><?= $v['status'] === 'active' ? badge('فعّال', 'success') : badge('ملغي', 'danger') ?><div class="fs-3 fw-bold num text-navy mt-1"><?= egp($v['amount']) ?> <small><?= CURRENCY ?></small></div></div></div>
   <div class="row g-3">
     <div class="col-6 col-md-3"><div class="text-muted small">رقم السند</div><b><?= e($v['doc_no']) ?></b></div>
     <div class="col-6 col-md-3"><div class="text-muted small">التاريخ</div><b><?= fdate($v['voucher_date']) ?></b></div>
     <div class="col-6 col-md-3"><div class="text-muted small"><?= $isReceipt ? 'الإيداع في' : 'الصرف من' ?></div><b><?= e($v['acc_name']) ?></b></div>
     <div class="col-6 col-md-3"><div class="text-muted small">طريقة الدفع</div><b><?= e($v['payment_method']) ?></b></div>
     <div class="col-12"><div class="text-muted small">التوزيع على الفواتير</div>
-      <?php foreach ($allocs as $a): ?><div><a href="<?= e(url($ic['table'] . '/view.php?id=' . (int)$a['id'])) ?>"><?= e($a['doc_no']) ?></a> — <span class="num"><?= money($a['amount']) ?></span></div><?php endforeach; ?>
-      <?php if ((float)$v['amount'] - $allocated > 0.004): ?><div class="text-muted">دفعة على الحساب: <span class="num"><?= money((float)$v['amount'] - $allocated) ?></span></div><?php endif; ?></div>
+      <?php foreach ($allocs as $a): ?><div><a href="<?= e(url($ic['table'] . '/view.php?id=' . (int)$a['id'])) ?>"><?= e($a['doc_no']) ?></a> — <span class="num"><?= egp($a['amount']) ?></span></div><?php endforeach; ?>
+      <?php if ((float)$v['amount'] - $allocated > 0.004): ?><div class="text-muted">دفعة على الحساب: <span class="num"><?= egp((float)$v['amount'] - $allocated) ?></span></div><?php endif; ?></div>
     <?php if ($v['notes']): ?><div class="col-12"><div class="text-muted small">ملاحظات</div><?= e($v['notes']) ?></div><?php endif; ?>
     <div class="col-12 small text-muted">سجّله: <?= e((string)$v['creator']) ?> — <?= e((string)$v['created_at']) ?></div>
   </div>

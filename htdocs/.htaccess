@@ -5,3 +5,13 @@ DirectoryIndex index.php
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "same-origin"
 </IfModule>
+
+AddType application/manifest+json .webmanifest
+<IfModule mod_headers.c>
+    <FilesMatch "^(sw\.js|manifest\.webmanifest)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+    <Files "sw.js">
+        Header set Service-Worker-Allowed "/"
+    </Files>
+</IfModule>

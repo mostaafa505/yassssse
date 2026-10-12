@@ -35,8 +35,8 @@ page_start('سندات القبض والصرف', 'vouchers');
   <div class="col-md-2 d-flex gap-1"><button class="btn btn-brand flex-fill"><i class="bi bi-search"></i></button><a class="btn btn-outline-brand" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 1]))) ?>"><i class="bi bi-file-earmark-excel"></i></a></div>
 </form></div>
 <div class="row g-3 mb-3">
-  <div class="col-md-6"><div class="kpi green"><div class="label">إجمالي المقبوض من العملاء (الفعّال)</div><div class="value num"><?= money($sums['receipt'] ?? 0) ?></div></div></div>
-  <div class="col-md-6"><div class="kpi red"><div class="label">إجمالي المصروف للموردين (الفعّال)</div><div class="value num"><?= money($sums['payment'] ?? 0) ?></div></div></div>
+  <div class="col-md-6"><div class="kpi green"><div class="label">إجمالي المقبوض من العملاء (الفعّال)</div><div class="value num"><?= egp($sums['receipt'] ?? 0) ?></div></div></div>
+  <div class="col-md-6"><div class="kpi red"><div class="label">إجمالي المصروف للموردين (الفعّال)</div><div class="value num"><?= egp($sums['payment'] ?? 0) ?></div></div></div>
 </div>
 <div class="cardx"><div class="head"><i class="bi bi-cash-coin"></i> السندات <span class="text-muted small fw-normal">(<?= $total ?>)</span>
   <span class="ms-auto d-flex gap-2 no-print"><a class="btn btn-gold btn-sm" href="form.php?type=receipt"><i class="bi bi-plus-lg"></i> سند قبض</a><a class="btn btn-brand btn-sm" href="form.php?type=payment"><i class="bi bi-plus-lg"></i> سند صرف</a></span></div>
@@ -45,7 +45,7 @@ page_start('سندات القبض والصرف', 'vouchers');
   <?php foreach ($rows as $r): ?>
     <tr class="<?= $r['status'] === 'cancelled' ? 'text-muted' : '' ?>"><td><?= fdate($r['voucher_date']) ?></td><td class="doc-no"><a class="fw-bold" href="view.php?id=<?= (int)$r['id'] ?>"><?= e($r['doc_no']) ?></a></td>
       <td><?= $r['voucher_type'] === 'receipt' ? badge('قبض', 'success') : badge('صرف', 'warning') ?></td><td><?= e((string)$r['party_name']) ?></td>
-      <td class="num fw-bold <?= $r['status'] === 'cancelled' ? 'text-decoration-line-through' : '' ?>"><?= money($r['amount']) ?></td>
+      <td class="num fw-bold <?= $r['status'] === 'cancelled' ? 'text-decoration-line-through' : '' ?>"><?= egp($r['amount']) ?></td>
       <td><?= e($r['acc_name']) ?> <span class="text-muted small">· <?= e($r['payment_method']) ?></span></td>
       <td><?= $r['status'] === 'active' ? badge('فعّال', 'success') : badge('ملغي') ?></td></tr>
   <?php endforeach; if (!$rows): ?><tr><td colspan="7" class="text-center text-muted py-4">لا توجد سندات</td></tr><?php endif; ?></tbody></table></div></div>
