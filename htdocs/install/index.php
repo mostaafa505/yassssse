@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ([
                 'company_name' => 'ماهر البحيري للاستيراد والتصدير', 'company_name_en' => 'Maher El Bahery Import & Export',
                 'company_phone' => '', 'company_address' => '', 'company_tax_no' => '', 'company_commercial_no' => '',
-                'invoice_footer' => 'شكراً لتعاملكم معنا', 'vat_rate' => '14', 'allow_negative_treasury' => '0', 'schema_version' => '3',
+                'invoice_footer' => 'شكراً لتعاملكم معنا', 'vat_rate' => '14', 'allow_negative_treasury' => '0', 'schema_version' => '4',
             ] as $k => $val) { $st->execute([$k, $val]); }
             $pdo->commit();
 

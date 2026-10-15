@@ -888,6 +888,12 @@ function run_migrations(): void
             // دور «مدير حسابات»
             db_exec("ALTER TABLE users MODIFY role enum('admin','accounts_manager','accountant','warehouse','sales','purchases','viewer') NOT NULL DEFAULT 'viewer'");
         }
+        if ($v < 4) {
+            // صور: لوجو العملاء/الموردين وصورة المستخدم
+            foreach (['customers' => 'logo', 'suppliers' => 'logo', 'users' => 'avatar'] as $tbl => $col) {
+                if (!column_exists($tbl, $col)) { db_exec("ALTER TABLE $tbl ADD COLUMN $col varchar(120) DEFAULT NULL"); }
+            }
+        }
         set_setting('schema_version', (string)SCHEMA_VERSION);
     } catch (Throwable $e) {
         error_log('[mb] migration failed: ' . $e->getMessage());

@@ -21,7 +21,7 @@ for p in dashboard/ items/ items/form.php "items/form.php?id=1" stock/ "stock/?w
   sales/ sales/form.php "sales/view.php?id=1" "sales/view.php?id=4" "sales/?status=cancelled" \
   vouchers/ "vouchers/form.php?type=receipt" "vouchers/form.php?type=payment&party=1" "vouchers/view.php?id=1" "vouchers/view.php?id=3" \
   treasury/ "treasury/?acc=1" "treasury/?acc=2" treasury/form.php "treasury/form.php?dir=receipt" treasury/transfer.php treasury/accounts.php "treasury/accounts.php?id=1" \
-  reports/ "reports/report.php?r=summary" "reports/report.php?r=aging_customers" "reports/report.php?r=aging_suppliers" "reports/report.php?r=expenses" "reports/report.php?r=treasury_expenses" manifest.webmanifest sw.js offline.html \
+  reports/ reports/daily.php "reports/daily.php?d=2026-10-10" "reports/daily.php?d=2026-10-10&export=1" "reports/report.php?r=summary" "reports/report.php?r=aging_customers" "reports/report.php?r=aging_suppliers" "reports/report.php?r=expenses" "reports/report.php?r=treasury_expenses" manifest.webmanifest sw.js offline.html \
   "reports/report.php?r=sales_by_customer" "reports/report.php?r=purchases_by_supplier" "reports/report.php?r=stock_value" \
   users/ users/form.php "users/form.php?id=1" users/profile.php settings/ audit/ \
   "customers/?export=1" "stock/?export=1" "treasury/?export=1" "purchases/?export=1" "reports/report.php?r=summary&export=1" "suppliers/statement.php?id=1&export=1"; do check "$p"; done

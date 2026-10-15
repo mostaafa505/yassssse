@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = post_str('full_name', 120); $cur = (string)($_POST['current_password'] ?? ''); $new = (string)($_POST['new_password'] ?? '');
         if ($name === '') { throw new AppError('الاسم مطلوب.'); }
         $data = ['full_name' => $name];
+        $newAv = save_uploaded_image('avatar', 'avatars', 320);
+        if ($newAv || !empty($_POST['remove_avatar'])) { delete_upload($me['avatar'] ?? null); $data['avatar'] = $newAv; }
         if ($new !== '') {
             if (!password_verify($cur, $me['password_hash'])) { throw new AppError('كلمة المرور الحالية غير صحيحة.'); }
             if (mb_strlen($new) < 8) { throw new AppError('كلمة المرور الجديدة 8 أحرف على الأقل.'); }
@@ -26,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         db_update('users', (int)$me['id'], $data);
         $_SESSION['user']['full_name'] = $name;
+        if (array_key_exists('avatar', $data)) { $_SESSION['user']['avatar'] = $data['avatar']; }
         audit('update', 'users', (int)$me['id'], 'تعديل الحساب الشخصي' . ($new !== '' ? ' + كلمة المرور' : ''));
         flash('success', 'تم تحديث بياناتك.');
         redirect('users/profile.php');
@@ -34,7 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 page_start('حسابي', '');
 ?>
 <div class="cardx" style="max-width:560px"><div class="head"><i class="bi bi-person-circle"></i> حسابي</div>
-<form method="post" class="body row g-3" autocomplete="off"><?= csrf_field() ?>
+<form method="post" class="body row g-3" autocomplete="off" enctype="multipart/form-data"><?= csrf_field() ?>
+  <div class="col-12 d-flex align-items-center gap-3"><?= avatar_html($me['avatar'] ?? null, (string)$me['full_name'], 'lg') ?>
+    <div class="flex-grow-1"><label class="form-label">صورتك الشخصية (اختياري)</label><input class="form-control" type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif">
+      <?php if (!empty($me['avatar'])): ?><div class="form-check mt-1"><input class="form-check-input" type="checkbox" name="remove_avatar" value="1" id="ra"><label class="form-check-label small" for="ra">حذف الصورة</label></div><?php endif; ?></div></div>
   <div class="col-12"><label class="form-label">اسم المستخدم</label><input class="form-control" value="<?= e($me['username']) ?>" disabled dir="ltr"></div>
   <div class="col-12"><label class="form-label required">الاسم</label><input class="form-control" name="full_name" value="<?= e($me['full_name']) ?>" required maxlength="120"></div>
   <div class="col-12"><hr class="my-1"><div class="fw-bold text-navy">تغيير كلمة المرور (اختياري)</div></div>

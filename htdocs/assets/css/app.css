@@ -375,3 +375,7 @@ tfoot td, tfoot th { background: rgba(232, 168, 28, .12); font-weight: 700; bord
 .pw-eye-ig{border:1.5px solid var(--field-border,#9db6d2);border-right:0;background:#fff;color:#5b7088;border-radius:0 0 0 0}
 .pw-eye-ig:hover{color:#1b5fb8;background:#eef5fd}
 .install-btn{display:inline-flex;align-items:center;gap:.4rem}
+/* ── صور (لوجو / مستخدم) ── */
+.avatar.has-img{background:#fff;padding:0;overflow:hidden;box-shadow:0 3px 10px rgba(26,104,168,.25),0 0 0 2px rgba(255,255,255,.9)}
+.avatar.has-img img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.sm{width:30px;height:30px;border-radius:10px;font-size:.85rem}

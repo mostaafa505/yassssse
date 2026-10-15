@@ -49,6 +49,7 @@ page_start('الرئيسية', 'dashboard', ['subtitle' => 'نظرة سريعة 
   <div class="col-xl-3 col-md-6"><div class="kpi red"><div class="label">المستحق للموردين علينا</div><div class="value num" data-count="<?= round($pay, 2) ?>"><?= egp($pay) ?></div><div class="sub">منها متأخر: <b class="<?= $overPay > 0 ? 'text-danger' : '' ?>"><?= egp($overPay) ?></b></div><i class="bi bi-truck bg"></i></div></div>
   <div class="col-xl-3 col-md-6"><div class="kpi"><div class="label">أصناف تحتاج إعادة طلب</div><div class="value num" data-count="<?= count($reorder) ?>" data-int="1"><?= count($reorder) ?></div><div class="sub"><a href="<?= e(url('stock/?status=reorder')) ?>">عرض القائمة</a></div><i class="bi bi-box-seam bg"></i></div></div>
 </div>
+<div class="mb-3"><a class="btn btn-outline-brand" href="<?= e(url('reports/daily.php')) ?>"><i class="bi bi-calendar-day"></i> يومية النهاردة: دخل وطلع وكاش وبنك</a></div>
 <div class="row g-3 mb-3">
   <div class="col-md-4"><div class="kpi green"><div class="label">مبيعات الشهر</div><div class="value num" data-count="<?= round($salesM, 2) ?>"><?= egp($salesM) ?></div><i class="bi bi-graph-up-arrow bg"></i></div></div>
   <div class="col-md-4"><div class="kpi"><div class="label">مشتريات الشهر (إجمالي الفواتير)</div><div class="value num" data-count="<?= round($purM, 2) ?>"><?= egp($purM) ?></div><i class="bi bi-bag-check bg"></i></div></div>

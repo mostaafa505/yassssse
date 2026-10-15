@@ -48,8 +48,8 @@ function party_list_page(string $type): void
           <tbody>
           <?php foreach ($rows as $r): [$balTxt, $balCls] = balance_phrase($type, (float)$r['balance']); ?>
             <tr class="<?= $r['is_active'] ? '' : 'text-muted' ?>">
-              <td><a class="fw-bold text-decoration-none" href="statement.php?id=<?= (int)$r['id'] ?>"><?= e($r['name']) ?></a><?= $r['is_active'] ? '' : ' ' . badge('موقوف') ?>
-                  <div class="small text-muted"><?= e($r['contact_person'] ?? '') ?><?= $r['phone'] ? ' · <span dir="ltr">' . e($r['phone']) . '</span>' : '' ?></div></td>
+              <td><div class="d-flex align-items-center gap-2"><?= avatar_html($r['logo'] ?? null, (string)$r['name'], 'sm') ?><div><a class="fw-bold text-decoration-none" href="statement.php?id=<?= (int)$r['id'] ?>"><?= e($r['name']) ?></a><?= $r['is_active'] ? '' : ' ' . badge('موقوف') ?>
+                  <div class="small text-muted"><?= e($r['contact_person'] ?? '') ?><?= $r['phone'] ? ' · <span dir="ltr">' . e($r['phone']) . '</span>' : '' ?></div></div></div></td>
               <td class="num"><?= egp($r['total_invoiced']) ?></td>
               <td class="num"><?= egp($r['total_paid']) ?></td>
               <td><span class="bal <?= $balCls ?>"><small><?= $balCls === 'owes' ? ($isCust ? 'عليه' : 'له علينا') : ($balCls === 'credit' ? ($isCust ? 'له رصيد' : 'لنا عنده') : 'الرصيد') ?></small><b><?= $balCls === 'zero' ? '0.00' : egp(abs((float)$r['balance'])) ?></b></span></td>
@@ -85,7 +85,12 @@ function party_form_page(string $type): void
         csrf_guard();
         $f = array_merge($f, $_POST);
         try {
+            $newLogo = save_uploaded_image('logo', 'logos');
             $newId = save_party($type, $_POST + ['is_active' => 0], $id ?: null);
+            if ($newLogo || !empty($_POST['remove_logo'])) {
+                delete_upload($p['logo'] ?? null);
+                db_exec("UPDATE {$c['table']} SET logo=? WHERE id=?", [$newLogo, $newId]);
+            }
             flash('success', 'تم حفظ بيانات ' . $c['label'] . '.');
             redirect($c['dir'] . '/statement.php?id=' . $newId);
         } catch (Throwable $ex) { flash('error', user_error_message($ex)); }
@@ -94,9 +99,12 @@ function party_form_page(string $type): void
     ?>
     <div class="cardx" style="max-width:860px">
       <div class="head"><i class="bi bi-person-vcard"></i> بيانات <?= e($c['label']) ?></div>
-      <form method="post" class="body">
+      <form method="post" class="body" enctype="multipart/form-data">
         <?= csrf_field() ?>
         <div class="row g-3">
+          <div class="col-12 d-flex align-items-center gap-3"><?= avatar_html($p['logo'] ?? null, (string)$f['name'], 'lg') ?>
+            <div class="flex-grow-1"><label class="form-label">لوجو <?= $type === 'customer' ? 'العميل' : 'المورد' ?> (اختياري)</label><input class="form-control" type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/gif">
+              <?php if (!empty($p['logo'])): ?><div class="form-check mt-1"><input class="form-check-input" type="checkbox" name="remove_logo" value="1" id="rl"><label class="form-check-label small" for="rl">حذف اللوجو الحالي</label></div><?php endif; ?></div></div>
           <div class="col-md-8"><label class="form-label required">الاسم</label><input class="form-control" name="name" value="<?= e((string)$f['name']) ?>" required maxlength="190"></div>
           <div class="col-md-4"><label class="form-label">الشخص المسؤول</label><input class="form-control" name="contact_person" value="<?= e((string)$f['contact_person']) ?>"></div>
           <div class="col-md-4"><label class="form-label">الهاتف</label><input class="form-control" name="phone" value="<?= e((string)$f['phone']) ?>" dir="ltr"></div>
@@ -156,7 +164,7 @@ function party_statement_page(string $type): void
     <?php [$balTxt, $balCls] = balance_phrase($type, (float)$sum['balance']); ?>
     <div class="cardx mb-3"><div class="body">
       <div class="party-head">
-        <div class="avatar lg"><?= e(mb_substr($p['name'], 0, 1)) ?></div>
+        <?= avatar_html($p['logo'] ?? null, (string)$p['name'], 'lg') ?>
         <div class="info">
           <h2><?= e($p['name']) ?> <?= badge(PARTY_STATUS_LABELS[$sum['status_key']], PARTY_STATUS_CLASS[$sum['status_key']]) ?></h2>
           <div class="meta">

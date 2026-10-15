@@ -36,8 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($isLastAdmin && ($role !== 'admin' || !$active)) { throw new AppError('لا يمكن تعطيل أو تغيير آخر مدير نشط في النظام.'); }
                 if ($id === (int)current_user()['id'] && !$active) { throw new AppError('لا يمكنك إيقاف حسابك بنفسك.'); }
             }
+            $newAv = save_uploaded_image('avatar', 'avatars', 320);
             $data = ['username' => $username, 'full_name' => $name, 'role' => $role, 'permissions' => $perms, 'is_active' => $active];
             if ($pass !== '') { $data['password_hash'] = password_hash($pass, PASSWORD_DEFAULT); }
+            if ($id && ($newAv || !empty($_POST['remove_avatar']))) { delete_upload($u['avatar'] ?? null); $data['avatar'] = $newAv; }
+            elseif (!$id && $newAv) { $data['avatar'] = $newAv; }
             $newCode = null;
             if ($id) {
                 db_update('users', $id, $data);
@@ -57,8 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 page_start($id ? 'تعديل مستخدم' : 'مستخدم جديد', 'users');
 ?>
 <div class="cardx" style="max-width:860px"><div class="head"><i class="bi bi-person-gear"></i> بيانات المستخدم</div>
-<form method="post" class="body" autocomplete="off"><?= csrf_field() ?>
+<form method="post" class="body" autocomplete="off" enctype="multipart/form-data"><?= csrf_field() ?>
   <div class="row g-3">
+    <div class="col-12 d-flex align-items-center gap-3"><?= avatar_html($f['avatar'] ?? null, (string)$f['full_name'], 'lg') ?>
+      <div class="flex-grow-1"><label class="form-label">الصورة (اختياري)</label><input class="form-control" type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif">
+        <?php if (!empty($f['avatar']) && $id): ?><div class="form-check mt-1"><input class="form-check-input" type="checkbox" name="remove_avatar" value="1" id="ra"><label class="form-check-label small" for="ra">حذف الصورة</label></div><?php endif; ?></div></div>
     <div class="col-md-6"><label class="form-label required">الاسم</label><input class="form-control" name="full_name" value="<?= e((string)$f['full_name']) ?>" required maxlength="120"></div>
     <div class="col-md-6"><label class="form-label required">اسم المستخدم (إنجليزي)</label><input class="form-control" name="username" value="<?= e((string)$f['username']) ?>" required dir="ltr" maxlength="60" autocomplete="off"></div>
     <div class="col-md-6"><label class="form-label <?= $id ? '' : 'required' ?>">كلمة المرور <?= $id ? '(اتركها فارغة بدون تغيير)' : '' ?></label><input class="form-control" type="password" name="password" dir="ltr" minlength="8" autocomplete="new-password" <?= $id ? '' : 'required' ?>></div>

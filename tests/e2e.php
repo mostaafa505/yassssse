@@ -15,7 +15,7 @@ class Client {
     function req(string $path, ?array $post = null): array {
         $ch = curl_init(BASE . '/' . ltrim($path, '/'));
         curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_COOKIEJAR => $this->jar, CURLOPT_COOKIEFILE => $this->jar, CURLOPT_FOLLOWLOCATION => true, CURLOPT_HEADER => false]);
-        if ($post !== null) { curl_setopt($ch, CURLOPT_POST, true); curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post)); }
+        if ($post !== null) { curl_setopt($ch, CURLOPT_POST, true); $hasFile = (bool)array_filter($post, fn($v) => $v instanceof CURLFile); curl_setopt($ch, CURLOPT_POSTFIELDS, $hasFile ? $post : http_build_query($post)); }
         $body = (string)curl_exec($ch);
         $r = ['code' => curl_getinfo($ch, CURLINFO_HTTP_CODE), 'body' => $body, 'url' => curl_getinfo($ch, CURLINFO_EFFECTIVE_URL)];
         curl_close($ch);
@@ -129,6 +129,23 @@ ok((int)$val("SELECT COUNT(*) FROM users WHERE username='evil'") === 0, 'مدي�
 $adminId = $val("SELECT id FROM users WHERE role='admin' ORDER BY id LIMIT 1");
 $m->req('users/form.php?id=' . $adminId); ok(str_contains($m->lastUrl, 'users/') && !str_contains($m->lastUrl, 'form.php'), 'مدير الحسابات مايفتحش حساب المدير');
 $r = $m->req('dashboard/'); ok(str_contains($r['body'], 'ج.م') && str_contains($r['body'], 'class="cur"'), 'الأرقام بتظهر معاها ج.م');
+echo "▶ صور (لوجو/مستخدم) + اليومية\n";
+$png = sys_get_temp_dir() . '/t_logo.png'; $im = imagecreatetruecolor(800, 400); imagefill($im, 0, 0, imagecolorallocate($im, 30, 120, 200)); imagepng($im, $png);
+$evil = sys_get_temp_dir() . '/evil.png'; file_put_contents($evil, '<?php echo 1;');
+$cid = $val("SELECT id FROM customers ORDER BY id LIMIT 1");
+$r = $c->post('customers/form.php?id=' . $cid, ['name' => $val("SELECT name FROM customers WHERE id=$cid"), 'credit_days' => '0', 'opening_balance' => '0', 'is_active' => '1', 'logo' => new CURLFile($evil, 'image/png', 'evil.png')]);
+ok(str_contains(flashText($r['body']), 'لازم يكون صورة'), 'رفض ملف مش صورة (حتى لو امتداده png)');
+$r = $c->post('customers/form.php?id=' . $cid, ['name' => $val("SELECT name FROM customers WHERE id=$cid"), 'credit_days' => '0', 'opening_balance' => '0', 'is_active' => '1', 'logo' => new CURLFile($png, 'image/png', 'logo.png')]);
+$logo = (string)$val("SELECT logo FROM customers WHERE id=$cid");
+ok(preg_match('#^logos/[a-f0-9]+\.png$#', $logo) === 1 && is_file(__DIR__ . '/../htdocs/uploads/' . $logo), 'حفظ لوجو العميل: ' . $logo);
+$sz = getimagesize(__DIR__ . '/../htdocs/uploads/' . $logo); ok($sz && max($sz[0], $sz[1]) <= 480, 'اللوجو اتصغّر (حد أقصى 480px)');
+$img = $c->req('uploads/' . $logo); ok($img['code'] === 200, 'اللوجو بيتفتح من الموقع');
+ok(str_contains($c->req('customers/')['body'], 'uploads/' . $logo), 'اللوجو ظاهر في قايمة العملاء');
+$r = $m->post('users/profile.php', ['full_name' => 'مدير الحسابات', 'avatar' => new CURLFile($png, 'image/png', 'me.png')]);
+ok(preg_match('#^avatars/[a-f0-9]+\.png$#', (string)$val("SELECT avatar FROM users WHERE username='am1'")) === 1, 'أي مستخدم يرفع صورته الشخصية');
+ok(str_contains($m->req('dashboard/')['body'], 'uploads/avatars/'), 'الصورة ظاهرة في القايمة الجانبية');
+$r = $m->req('reports/daily.php'); ok($r['code'] === 200 && str_contains($r['body'], 'الكاش والبنك') && str_contains($r['body'], 'دخل النهاردة'), 'شاشة اليومية');
+ok($m->req('reports/daily.php?d=2026-10-10')['code'] === 200 && str_contains($m->req('reports/daily.php?d=2026-10-10')['body'], 'إيجار'), 'يومية يوم فيه حركات بتعرضها');
 $r = $m->req('auth/login.php'); ok(str_contains($r['body'], 'manifest.webmanifest'), 'الصفحات فيها رابط الـ manifest');
 $mf = json_decode($m->req('manifest.webmanifest')['body'], true);
 ok(($mf['display'] ?? '') === 'standalone' && count($mf['icons'] ?? []) >= 3, 'manifest صالح (standalone + أيقونات)');

@@ -86,7 +86,7 @@ function page_start(string $title, string $module, array $opts = []): void
     <?php endforeach; endforeach; ?>
     </nav>
     <div class="user-box">
-        <div class="avatar"><?= e($initial) ?></div>
+        <?= avatar_html($u['avatar'] ?? null, (string)$u['full_name']) ?>
         <div class="who"><b><?= e($u['full_name']) ?></b><span><?= e(ROLES[$u['role']]['label'] ?? '') ?></span></div>
         <div class="acts"><a href="#" data-install class="d-none install-btn" title="تثبيت التطبيق"><i class="bi bi-download"></i></a><a href="<?= e(url('users/profile.php')) ?>" title="حسابي"><i class="bi bi-person-gear"></i></a><a href="<?= e(url('auth/logout.php')) ?>" title="تسجيل الخروج"><i class="bi bi-box-arrow-left"></i></a></div>
     </div>

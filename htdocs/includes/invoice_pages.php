@@ -169,7 +169,7 @@ function invoice_form_page(string $kind): void
       </div></div></div></div>
 
       <div class="col-lg-12"><div class="cardx"><div class="head"><i class="bi bi-list-ul"></i> الأصناف
-          <button type="button" class="btn btn-sm btn-outline-brand ms-auto" id="addLine"><i class="bi bi-plus-lg"></i> إضافة سطر</button></div>
+          <button type="button" class="btn btn-sm btn-outline-brand ms-auto add-line" id="addLine"><i class="bi bi-plus-lg"></i> إضافة صنف</button></div>
         <div class="table-responsive"><table class="table lines-table align-middle">
           <thead><tr><th style="min-width:260px">الصنف</th><th style="width:140px">الكمية</th><th style="width:90px">الوحدة</th><th style="width:160px">سعر الوحدة</th><th class="num" style="width:150px">الإجمالي</th><th style="width:44px"></th></tr></thead>
           <tbody id="linesBody">
@@ -184,6 +184,7 @@ function invoice_form_page(string $kind): void
             </tr>
           <?php endforeach; ?>
           </tbody></table></div>
+        <div class="px-3 pb-3 d-flex align-items-center gap-3"><button type="button" class="btn btn-outline-brand add-line"><i class="bi bi-plus-lg"></i> إضافة صنف تاني في نفس الفاتورة</button><span class="small text-muted">تقدر تضيف أي عدد أصناف (رز، سكر، زيت...) في فاتورة واحدة — وتضغط Enter بعد السعر لسطر جديد.</span></div>
         <template id="lineTpl"><tr>
               <td><select class="form-select" name="item_id[]" required><?= $itemOpts ?></select></td>
               <td><input class="form-control q num" name="qty[]" inputmode="decimal" required></td>

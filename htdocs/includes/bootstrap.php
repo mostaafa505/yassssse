@@ -8,7 +8,7 @@ declare(strict_types=1);
 const APP_NAME    = 'ماهر البحيري للاستيراد والتصدير';
 const APP_SHORT   = 'ماهر البحيري';
 const APP_NAME_EN = 'Maher El Bahery Import & Export';
-const SCHEMA_VERSION = 3;   // رقم نسخة هيكل قاعدة البيانات (بيترقّى تلقائياً — راجع run_migrations)
+const SCHEMA_VERSION = 4;   // رقم نسخة هيكل قاعدة البيانات (بيترقّى تلقائياً — راجع run_migrations)
 const CURRENCY    = 'ج.م';
 
 date_default_timezone_set('Africa/Cairo');
@@ -353,7 +353,7 @@ function load_user_session(array $u): void
     $mods = $u['permissions'] ? (json_decode($u['permissions'], true) ?: []) : role_modules($u['role']);
     $_SESSION['user'] = [
         'id' => (int)$u['id'], 'username' => $u['username'], 'full_name' => $u['full_name'],
-        'role' => $u['role'], 'modules' => $mods, 'has_recovery' => !empty($u['recovery_hash']),
+        'role' => $u['role'], 'modules' => $mods, 'has_recovery' => !empty($u['recovery_hash']), 'avatar' => $u['avatar'] ?? null,
     ];
 }
 
@@ -408,4 +408,5 @@ function csv_download(string $filename, array $headers, array $rows): never
 
 require_once __DIR__ . '/services.php';
 require_once __DIR__ . '/pwa.php';
+require_once __DIR__ . '/uploads.php';
 if (!IN_INSTALLER && $pdo) { run_migrations(); }

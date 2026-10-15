@@ -74,7 +74,16 @@
             var node = tpl.content.firstElementChild.cloneNode(true);
             tbody.appendChild(node); recalc(); return node;
         };
-        $('#addLine').addEventListener('click', function () { addLine().querySelector('select').focus(); });
+        $$('.add-line').forEach(function (b) { b.addEventListener('click', function () { addLine().querySelector('select').focus(); }); });
+        // Enter في سعر الوحدة = سطر صنف جديد (بدل حفظ الفاتورة بالغلط)
+        tbody.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && e.target.matches('input')) {
+                e.preventDefault();
+                var tr = e.target.closest('tr');
+                if (e.target.classList.contains('p') && tr === tbody.lastElementChild) addLine().querySelector('select').focus();
+                else { var n = e.target.classList.contains('q') ? tr.querySelector('.p') : (tr.nextElementSibling && tr.nextElementSibling.querySelector('select')); if (n) n.focus(); }
+            }
+        });
         tbody.addEventListener('click', function (e) {
             var del = e.target.closest('.del-line');
             if (del) { if ($$('tr', tbody).length > 1) del.closest('tr').remove(); recalc(); }
