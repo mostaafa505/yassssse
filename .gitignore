@@ -1,0 +1,9 @@
+# إعدادات السيرفر السرية (بيانات قاعدة البيانات) — ما تترفعش على GitHub
+htdocs/config/env.php
+htdocs/install/installed.lock
+*.log
+.DS_Store
+# صور مرفوعة من المستخدمين
+htdocs/uploads/*
+!htdocs/uploads/.htaccess
+!htdocs/uploads/index.html
